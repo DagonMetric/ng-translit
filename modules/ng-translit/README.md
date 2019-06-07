@@ -1,9 +1,8 @@
 # Transliteration Service for Angular
 
-[![Build Status](https://dev.azure.com/DagonMetric/ng-translit/_apis/build/status/DagonMetric.ng-translit?branchName=master&jobName=Job)](https://dev.azure.com/DagonMetric/ng-translit/_build/latest?definitionId=6&branchName=master)
-[![Build status](https://ci.appveyor.com/api/projects/status/mk3f6c0lx3avl15p?svg=true)](https://ci.appveyor.com/project/admindagonmetriccom/ng-translit)
+[![Build status](https://ci.appveyor.com/api/projects/status/83mp8bintrt5nx37/branch/master?svg=true)](https://ci.appveyor.com/project/admindagonmetriccom/ng-translit/branch/master)
 [![codecov](https://codecov.io/gh/DagonMetric/ng-translit/branch/master/graph/badge.svg)](https://codecov.io/gh/DagonMetric/ng-translit)
-[![npm (scoped)](https://img.shields.io/npm/v/@dagonmetric/ng-translit.svg)](https://www.npmjs.com/package/@dagonmetric/ng-translit)
+[![npm version](https://img.shields.io/npm/v/@dagonmetric/ng-translit.svg)](https://www.npmjs.com/package/@dagonmetric/ng-translit)
 [![Dependency Status](https://david-dm.org/DagonMetric/ng-translit.svg)](https://david-dm.org/DagonMetric/ng-translit)
 [![Gitter](https://badges.gitter.im/DagonMetric/general.svg)](https://gitter.im/DagonMetric/general?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 

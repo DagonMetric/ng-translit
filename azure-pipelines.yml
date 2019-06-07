@@ -5,10 +5,13 @@ trigger:
     - releases/*
   paths:
     include:
-    - 'bin/*'
-    - 'configs/*'
-    - 'src/*'
-    - 'package.json'
+    - modules/*
+    - samples/*
+    - angular-build.json
+    - angular.json
+    - package.json
+    - tsconfig.json
+    - tslint.json
     - 'README.md'
     - 'azure-pipelines.yml'
   tags:

@@ -7,8 +7,6 @@
     "transliterator",
     "transliterate",
     "alphabet-converter",
-    "character-encoding-converter",
-    "font-encoding-converter",
     "internationalization",
     "intl",
     "unicode-tools",

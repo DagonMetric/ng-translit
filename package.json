@@ -1,0 +1,63 @@
+{
+  "name": "ng-translit",
+  "version": "6.0.0",
+  "private": true,
+  "author": "DagonMetric",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DagonMetric/ng-translit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DagonMetric/ng-translit/issues"
+  },
+  "homepage": "https://github.com/DagonMetric/ng-translit",
+  "scripts": {
+    "ng": "ng",
+    "ngb": "ngb",
+    "rimraf": "rimraf",
+    "lint": "ng lint",
+    "build": "ngb build --filter=libs --env.prod",
+    "build:ng": "ng build ng-translit --prod && ng build ng-translit-http-loader --prod",
+    "test": "ng test",
+    "test:ci": "ng test -c=ci",
+    "clean:coverage": "rimraf -- dist/coverage",
+    "clean:junit": "rimraf -- dist/junit"
+  },
+  "dependencies": {
+    "@angular/common": "^8.0.0",
+    "@angular/core": "^8.0.0",
+    "rxjs": "^6.5.2",
+    "tslib": "^1.9.3"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^0.800.2",
+    "@angular/cli": "^8.0.2",
+    "@angular/compiler": "^8.0.0",
+    "@angular/compiler-cli": "^8.0.0",
+    "@angular/language-service": "^8.0.0",
+    "@angular/platform-browser": "^8.0.0",
+    "@angular/platform-browser-dynamic": "^8.0.0",
+    "@dagonmetric/angular-build": "^8.0.1",
+    "@types/jasmine": "^3.3.13",
+    "@types/jasminewd2": "^2.0.6",
+    "@types/node": "^12.0.7",
+    "codelyzer": "^5.1.0",
+    "jasmine-core": "^3.4.0",
+    "jasmine-spec-reporter": "~4.2.1",
+    "karma": "~4.1.0",
+    "karma-chrome-launcher": "~2.2.0",
+    "karma-coverage-istanbul-reporter": "~2.0.5",
+    "karma-jasmine": "~2.0.1",
+    "karma-jasmine-html-reporter": "^1.4.2",
+    "karma-junit-reporter": "^1.2.0",
+    "protractor": "~5.4.2",
+    "rimraf": "^2.6.3",
+    "ts-node": "^8.2.0",
+    "tsickle": "^0.35.0",
+    "tslint": "^5.17.0",
+    "tslint-microsoft-contrib": "^6.2.0",
+    "typescript": "~3.4.5",
+    "zone.js": "^0.9.1"
+  }
+}

@@ -1,0 +1,162 @@
+trigger:
+  branches:
+    include:
+    - master
+    - releases/*
+  paths:
+    include:
+    - 'bin/*'
+    - 'configs/*'
+    - 'src/*'
+    - 'package.json'
+    - 'README.md'
+    - 'azure-pipelines.yml'
+  tags:
+    include:
+    - v*
+
+jobs:
+  - job: basic
+    pool:
+      vmImage: 'ubuntu-16.04'
+    steps:
+      - task: UseNode@1
+        inputs:
+          version: '10.9.0'
+        displayName: 'Use Node 10.9.0'
+      # - script: |
+      #     curl -o- -L https://yarnpkg.com/install.sh | bash
+      #   displayName: 'Install Yarn'
+      - script: |
+          yarn install --frozen-lockfile
+        displayName: 'Install dependencies'
+      - script: |
+          yarn build
+        displayName: "Run build"
+      - script: |
+          yarn test:ci
+        condition: and(succeeded(), ne(variables['skipTest'], 'true'))
+        displayName: "Run test"
+      - task: PublishCodeCoverageResults@1
+        inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: '$(System.DefaultWorkingDirectory)/dist/coverage/ng-translit/cobertura-coverage.xml'
+          reportDirectory: '$(System.DefaultWorkingDirectory)/dist/coverage/ng-translit'
+          failIfCoverageEmpty: true
+        condition: and(succeededOrFailed(), ne(variables['skipPublishCodeCoverageResults'], 'true'))
+        displayName: 'Publish code coverage results'
+      - task: PublishTestResults@2
+        inputs:
+          searchFolder: '$(System.DefaultWorkingDirectory)/dist/junit/ng-translit'
+          testRunTitle: 'ng-translit'
+          testResultsFormat: JUnit
+          testResultsFiles: '**/TESTS*.xml'
+          failTaskOnFailedTests: true
+        condition: and(succeededOrFailed(), ne(variables['skipPublishTestResults'], 'true'))
+        displayName: 'Publish test results'
+      - script: |
+          yarn lint
+        condition: and(succeeded(), ne(variables['skipLint'], 'true'))
+        displayName: 'Run linting'
+      - bash: |
+          verson=`node -p "require('./dist/package.json').version;"`
+          echo "##vso[task.setvariable variable=packageVersion]$verson"
+        displayName: 'Set package version variable'
+      - task: PublishPipelineArtifact@0
+        inputs:
+          artifactName: 'ng-translit-builds'
+          targetPath: 'dist/packages/ng-translit'
+        displayName: 'Publish build artifacts'
+      - task: PublishPipelineArtifact@0
+        inputs:
+          artifactName: 'release-notes'
+          targetPath: 'release-notes/v$(packageVersion)/'
+        condition: and(succeeded(), contains(variables['Build.SourceBranch'], 'refs/tags/'))
+        displayName: 'Publish release notes'
+
+  - job: Linux
+    dependsOn:
+      - basic
+    condition: and(succeeded(), ne(variables['skipLinuxJob'], 'true'))
+    pool:
+      vmImage: 'ubuntu-latest'
+    strategy:
+      maxParallel: 2
+      matrix:
+        node-12:
+          node_version: '12.x'
+        node-10:
+          node_version: '10.x'
+    steps:
+      - task: UseNode@1
+        inputs:
+          version: $(node_version)
+        displayName: 'Use Node $(node_version)'
+      - script: |
+          yarn install --frozen-lockfile
+        displayName: 'Install dependencies'
+      - script: |
+          yarn build
+        displayName: 'Run build'
+      - script: |
+          yarn test:ci
+        condition: and(succeeded(), ne(variables['skipTest'], 'true'))
+        displayName: 'Run test'
+
+  - job: MacOS
+    dependsOn:
+      - basic
+    condition: and(succeeded(), ne(variables['skipMacOSJob'], 'true'))
+    pool:
+      vmImage: 'macOS-latest'
+    strategy:
+      maxParallel: 2
+      matrix:
+        node-12:
+          node_version: '12.x'
+        node-10:
+          node_version: '10.x'
+    steps:
+      - task: UseNode@1
+        inputs:
+          version: $(node_version)
+        displayName: 'Use Node $(node_version)'
+      - script: |
+          yarn install --frozen-lockfile
+        displayName: 'Install dependencies'
+      - script: |
+          yarn build
+        displayName: 'Run build'
+      - script: |
+          yarn test:ci
+        condition: and(succeeded(), ne(variables['skipTest'], 'true'))
+        displayName: 'Run test'
+
+  - job: Windows
+    dependsOn:
+      - basic
+    condition: and(succeeded(), ne(variables['skipWindowsJob'], 'true'))
+    pool:
+      vmImage: 'windows-latest'
+    strategy:
+      maxParallel: 2
+      matrix:
+        node-12:
+          node_version: '12.x'
+        node-10:
+          node_version: '10.x'
+    steps:
+      - task: UseNode@1
+        inputs:
+          version: $(node_version)
+        displayName: 'Use Node $(node_version)'
+      - script: |
+          yarn install --frozen-lockfile
+        displayName: 'Install dependencies'
+      - script: |
+          yarn build
+        displayName: 'Run build'
+      - script: |
+          yarn test:ci
+        condition: and(succeeded(), ne(variables['skipTest'], 'true'))
+        displayName: 'Run test'

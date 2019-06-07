@@ -1,0 +1,35 @@
+version: '{build}'
+image: 'Visual Studio 2017'
+clone_depth: 1
+only_commits:
+  files:
+    - modules/*
+    - samples/*
+    - angular-build.json
+    - angular.json
+    - package.json
+    - tsconfig.json
+    - tslint.json
+    - .appveyor.yml
+skip_commits:
+  files:
+    - '**/*.md'
+environment:
+  nodejs_version: "10"
+install:
+  - ps: Install-Product node $env:nodejs_version
+  - yarn install --frozen-lockfile
+build_script:
+  - yarn build
+test_script:
+  - yarn test:ci
+deploy_script:
+  - ps: |
+      if ($env:CODECOV_TOKEN)
+      {
+        yarn global add codecov
+        codecov --disable=gcov -f dist/coverage/ng-translit/lcov.info -F unit
+      }
+cache:
+  - node_modules -> yarn.lock
+  - "%LOCALAPPDATA%\\Yarn"

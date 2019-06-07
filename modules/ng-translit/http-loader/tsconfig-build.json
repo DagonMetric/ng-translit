@@ -1,0 +1,24 @@
+{
+  "extends": "../tsconfig-build.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "rootDir": "../",
+    "outDir": "../../../dist/packages/ng-translit",
+
+    "paths": {
+      "@dagonmetric/ng-translit": [ "../../../dist/packages/ng-translit" ]
+    },
+  },
+  "files": [
+    "public_api.ts"
+  ],
+  "angularCompilerOptions": {
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": true,
+    "skipTemplateCodegen": true,
+    "fullTemplateTypeCheck": true,
+    "strictInjectionParameters": true,
+    "flatModuleOutFile": "http-loader.js",
+    "flatModuleId": "@dagonmetric/ng-translit/http-loader"
+  }
+}

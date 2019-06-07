@@ -1,0 +1,90 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "modules",
+  "projects": {
+    "ng-translit": {
+      "root": "modules/ng-translit",
+      "sourceRoot": "modules/ng-translit",
+      "projectType": "library",
+      "architect": {
+        "build": {
+          "builder": "@dagonmetric/angular-build:lib",
+          "options": {
+            "extends": "file:angular-build.json:lib:ng-translit",
+            "outputPath": "dist/packages/ng-translit"
+          },
+          "configurations": {
+            "production": {
+              "environment": "prod"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "modules/ng-translit/test.ts",
+            "tsConfig": "modules/ng-translit/tsconfig-test.json",
+            "karmaConfig": "modules/ng-translit/karma.conf.js",
+            "codeCoverageExclude": [
+              "**/test.ts",
+              "**/index.ts",
+              "**/public_api.ts"
+            ]
+          },
+          "configurations": {
+            "ci": {
+              "codeCoverage": true,
+              "browsers": "ChromeHeadlessCI",
+              "reporters": ["progress", "junit"],
+              "watch": false,
+              "progress": false
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "modules/ng-translit/tsconfig-build.json",
+              "modules/ng-translit/tsconfig-test.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "ng-translit-http-loader": {
+      "root": "modules/ng-translit/http-loader",
+      "sourceRoot": "modules/ng-translit/http-loader/src",
+      "projectType": "library",
+      "architect": {
+        "build": {
+          "builder": "@dagonmetric/angular-build:lib",
+          "options": {
+            "extends": "file:angular-build.json:lib:ng-translit-http-loader",
+            "outputPath": "dist/packages/ng-translit"
+          },
+          "configurations": {
+            "production": {
+              "environment": "prod"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "modules/ng-translit/http-loader/tsconfig-build.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

@@ -11,9 +11,6 @@ only_commits:
     - tsconfig.json
     - tslint.json
     - .appveyor.yml
-skip_commits:
-  files:
-    - '**/*.md'
 environment:
   nodejs_version: "10"
 install:

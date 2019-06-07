@@ -3,12 +3,16 @@ resources:
     - repository: templates
       type: github
       name: DagonMetric/ng-workspace-configs
+      endpoint: github-dagonmetric-connection
 
 trigger:
   branches:
     include:
     - master
     - releases/*
+  tags:
+    include:
+    - v*
   paths:
     include:
     - modules/*
@@ -20,9 +24,6 @@ trigger:
     - tslint.json
     - 'README.md'
     - 'azure-pipelines.yml'
-  tags:
-    include:
-    - v*
 
 jobs:
   - template: azure-pipelines/jobs.yml@templates

@@ -30,13 +30,8 @@ jobs:
     parameters:
       name: default
       runLint: 'false'
-      runTest: 'false'
   - template: azure-pipelines/jobs.yml@templates
     parameters:
       name: macOS
       vmImage: 'macOS-latest'
-      dependsOn: 'default'
       runLint: 'false'
-      matrix:
-        node-10:
-          nodeVersion: '10.x'

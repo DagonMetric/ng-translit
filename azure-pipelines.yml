@@ -25,13 +25,5 @@ trigger:
     - 'README.md'
     - 'azure-pipelines.yml'
 
-jobs:
-  - template: azure-pipelines/jobs.yml@templates
-    parameters:
-      name: default
-      runLint: 'false'
-  - template: azure-pipelines/jobs.yml@templates
-    parameters:
-      name: macOS
-      vmImage: 'macOS-latest'
-      runLint: 'false'
+stages:
+  - template: azure-pipelines/multi-platform-build-test-stage.yml@templates

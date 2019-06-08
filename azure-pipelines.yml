@@ -26,4 +26,4 @@ trigger:
     - 'azure-pipelines.yml'
 
 stages:
-  - template: azure-pipelines/multi-platform-build-test-stage.yml@templates
+  - template: azure-pipelines/multi-platform-build-stage.yml@templates

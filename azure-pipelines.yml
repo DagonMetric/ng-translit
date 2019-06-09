@@ -27,16 +27,3 @@ trigger:
 
 stages:
   - template: azure-pipelines/multi-platform-build-stage.yml@templates
-    parameters:
-      publishBuildArtifacts:
-      - publishBuildArtifact:
-        artifactName: 'packages'
-        targetPath: 'dist/packages'
-      publishTestArtifacts:
-        - publishTestArtifact:
-          testRunTitle: 'ng-translit'
-          searchFolder: 'dist/junit/ng-translit'
-      publishCodeCoverageArtifacts:
-        - publishCodeCoverageArtifact:
-          summaryFileLocation: 'dist/coverage/ng-translit/cobertura-coverage.xml'
-          reportDirectory: 'dist/coverage/ng-translit'

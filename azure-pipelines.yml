@@ -27,7 +27,3 @@ trigger:
 
 stages:
   - template: azure-pipelines/multi-platform-build-stage.yml@templates
-    parameters:
-      skipLinuxJob: ${{ variables['skipLinuxJob'] }}
-      skipMacOSJob: ${{ variables['skipMacOSJob'] }}
-      skipWindowsJob: ${{ variables['skipWindowsJob'] }}

@@ -5,25 +5,5 @@ resources:
       name: DagonMetric/ng-workspace-configs
       endpoint: github-dagonmetric-connection
 
-trigger:
-  branches:
-    include:
-    - master
-    - releases/*
-  tags:
-    include:
-    - v*
-  paths:
-    include:
-    - modules/*
-    - samples/*
-    - angular-build.json
-    - angular.json
-    - package.json
-    - tsconfig.json
-    - tslint.json
-    - 'README.md'
-    - 'azure-pipelines.yml'
-
 stages:
   - template: azure-pipelines/multi-platform-build-stage.yml@templates

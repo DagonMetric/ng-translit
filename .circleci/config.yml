@@ -1,7 +1,7 @@
 version: 2.1
 
-var_1: &docker_image circleci/node:10.12-browsers
-var_2: &cache_key v2.1-ng-translit-{{ .Branch }}-{{ checksum "yarn.lock" }}-node-10.12
+var_1: &docker_image circleci/node:10.16.0-browsers
+var_2: &cache_key v2.1-ng-translit-{{ .Branch }}-{{ checksum "yarn.lock" }}-node-10.16.0
 
 jobs:
   build:
@@ -25,4 +25,4 @@ jobs:
           command: yarn build
       - run:
           name: Run Test
-          command: yarn test:ci
+          command: yarn test -c=ci

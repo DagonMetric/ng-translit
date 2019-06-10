@@ -46,8 +46,7 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "modules/ng-translit/tsconfig-build.json",
-              "modules/ng-translit/tsconfig-test.json"
+              "tsconfig.json"
             ],
             "exclude": [
               "**/node_modules/**"
@@ -71,17 +70,6 @@
             "production": {
               "environment": "prod"
             }
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "modules/ng-translit/http-loader/tsconfig-build.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
           }
         }
       }

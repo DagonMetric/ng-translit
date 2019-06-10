@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@angular-devkit/architect@0.800.2", "@angular-devkit/architect@^0.800.1":
+"@angular-devkit/architect@0.800.2", "@angular-devkit/architect@^0.800.2":
   version "0.800.2"
   resolved "https://registry.yarnpkg.com/@angular-devkit/architect/-/architect-0.800.2.tgz#0924864e57d1e56bddeae257c8779a2662c34e69"
   integrity sha512-251GOQwI3254AtnGWZoHmjOMFcz7h6M3fPmRHpYuuhRPIwZnQCKaszYI7gaP9zR7uArLUwsuPo+YYz8lb6Giwg==
@@ -65,7 +65,7 @@
     webpack-subresource-integrity "1.1.0-rc.6"
     worker-plugin "3.1.0"
 
-"@angular-devkit/build-optimizer@0.800.2", "@angular-devkit/build-optimizer@^0.800.1":
+"@angular-devkit/build-optimizer@0.800.2", "@angular-devkit/build-optimizer@^0.800.2":
   version "0.800.2"
   resolved "https://registry.yarnpkg.com/@angular-devkit/build-optimizer/-/build-optimizer-0.800.2.tgz#4223b2ac8c2a4c05682d1f3cb0417b4630b4a943"
   integrity sha512-A/lX7Fjfeh5PspGURV8fJeOsrIYM/7why7mC6v78zdxaErd4S18wUXJDfndjx3qiKyuq76Uu4cQcS7XfClpb8Q==
@@ -85,7 +85,7 @@
     rxjs "6.4.0"
     webpack-merge "4.2.1"
 
-"@angular-devkit/core@8.0.2", "@angular-devkit/core@^8.0.1":
+"@angular-devkit/core@8.0.2", "@angular-devkit/core@^8.0.2":
   version "8.0.2"
   resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-8.0.2.tgz#22b017b38b4d6127ab2e39a27990fd7962d3844a"
   integrity sha512-S2OPYe6Qu7qTS8Q2lzf4qNjXdbN/J2YVnd3wGauMI8Tih5tY/NzUW3h5ds09nRcjsdBDuT0qgf3IMlCZWIABvQ==
@@ -272,15 +272,15 @@
     lodash "^4.17.11"
     to-fast-properties "^2.0.0"
 
-"@dagonmetric/angular-build@^8.0.1":
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/@dagonmetric/angular-build/-/angular-build-8.0.1.tgz#fce5acead947858ebf8b701b7cd2b2c647c5d37f"
-  integrity sha512-vmL5UWTARwQ7huiy7WriMb6CatuLQ9odWGsaC4ttlp6gpDSh4gFVeRJDgYFh1g+JUWL3KS18jXc8j0WtJmC4xQ==
+"@dagonmetric/angular-build@^8.0.2":
+  version "8.0.2"
+  resolved "https://registry.yarnpkg.com/@dagonmetric/angular-build/-/angular-build-8.0.2.tgz#c6f29f7199980eb847bf6a34ccf87af2d4c7aaaf"
+  integrity sha512-WXRcayEpcO22LQeM3u1iRfXfwo95AbVLd6DkqFr1Nb+7qcF4w4vtnIcOgXtIRRb4pI8vrtG1rvnqPdEUjkR4yw==
   dependencies:
-    "@angular-devkit/architect" "^0.800.1"
-    "@angular-devkit/build-optimizer" "^0.800.1"
-    "@angular-devkit/core" "^8.0.1"
-    "@ngtools/webpack" "^8.0.1"
+    "@angular-devkit/architect" "^0.800.2"
+    "@angular-devkit/build-optimizer" "^0.800.2"
+    "@angular-devkit/core" "^8.0.2"
+    "@ngtools/webpack" "^8.0.2"
     ajv "^6.10.0"
     ajv-keywords "^3.4.0"
     autoprefixer "^9.6.0"
@@ -308,7 +308,7 @@
     postcss-url "^8.0.0"
     raw-loader "~1.0.0"
     resolve "^1.11.1"
-    rollup "^1.14.2"
+    rollup "^1.14.4"
     rollup-plugin-commonjs "^10.0.0"
     rollup-plugin-node-resolve "^5.0.1"
     rxjs "~6.4.0"
@@ -330,7 +330,7 @@
     webpack-sources "^1.3.0"
     yargs "^13.2.4"
 
-"@ngtools/webpack@8.0.2", "@ngtools/webpack@^8.0.1":
+"@ngtools/webpack@8.0.2", "@ngtools/webpack@^8.0.2":
   version "8.0.2"
   resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-8.0.2.tgz#d60167b514b531ed6ae308b4911739dd102e41c7"
   integrity sha512-5P0FHF4p5H/G9xGjOG9meDViXcdW3RPdJa2nX1gGpii3/dhFhmU4pxjKn1Bfs4x+PB9FQQvhSvGIBLNf+B4y5Q==
@@ -411,7 +411,7 @@
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-3.0.3.tgz#3dca0e3f33b200fc7d1139c0cd96c1268cadfd9d"
   integrity sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA==
 
-"@types/node@*", "@types/node@^12.0.3", "@types/node@^12.0.7":
+"@types/node@*", "@types/node@^12.0.7":
   version "12.0.7"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.0.7.tgz#4f2563bad652b2acb1722d7e7aae2b0ff62d192c"
   integrity sha512-1YKeT4JitGgE4SOzyB9eMwO0nGVNkNEsm9qlIt1Lqm/tG2QEiSMTD4kS3aO6L+w5SClLVxALmIBESK6Mk5wX0A==
@@ -7060,13 +7060,13 @@ rollup-pluginutils@^2.7.0, rollup-pluginutils@^2.8.0:
   dependencies:
     estree-walker "^0.6.1"
 
-rollup@^1.14.2:
-  version "1.14.3"
-  resolved "https://registry.yarnpkg.com/rollup/-/rollup-1.14.3.tgz#f9b0bd428aa5945c712575e55b497e802ccb4ab9"
-  integrity sha512-UZhB6FmipHnSJfjulvM3lrOKuCKTYYkd1pYXzvMsxTbw1eC3SRhPzS1kJU96DT3RZUCOYiFAQYrgcBPRm4E+jw==
+rollup@^1.14.4:
+  version "1.14.5"
+  resolved "https://registry.yarnpkg.com/rollup/-/rollup-1.14.5.tgz#a0eb9197f311396870df2ad591277ccd37e7bc79"
+  integrity sha512-XKegaT6NhrKuBvFQCeLfDJ7bNpfnWIMQfLx9+Qe34rrKaVOtNGVIf5vyIKuwS4JlF2l/nA7RvEsItXqyF0ZFZg==
   dependencies:
     "@types/estree" "0.0.39"
-    "@types/node" "^12.0.3"
+    "@types/node" "^12.0.7"
     acorn "^6.1.1"
 
 run-async@^2.2.0:

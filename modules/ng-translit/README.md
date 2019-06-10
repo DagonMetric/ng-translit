@@ -1,5 +1,6 @@
 # Transliteration Service for Angular
 
+[![Build Status](https://dev.azure.com/DagonMetric/ng-translit/_apis/build/status/DagonMetric.ng-translit?branchName=master)](https://dev.azure.com/DagonMetric/ng-translit/_build/latest?definitionId=8&branchName=master)
 [![Build status](https://ci.appveyor.com/api/projects/status/83mp8bintrt5nx37/branch/master?svg=true)](https://ci.appveyor.com/project/admindagonmetriccom/ng-translit/branch/master)
 [![codecov](https://codecov.io/gh/DagonMetric/ng-translit/branch/master/graph/badge.svg)](https://codecov.io/gh/DagonMetric/ng-translit)
 [![npm version](https://img.shields.io/npm/v/@dagonmetric/ng-translit.svg)](https://www.npmjs.com/package/@dagonmetric/ng-translit)

@@ -18,7 +18,6 @@
     "rimraf": "rimraf",
     "lint": "ng lint",
     "build": "ngb build --env.prod",
-    "build:ng": "ng build ng-translit --prod && ng build ng-translit-http-loader --prod",
     "test": "ng test"
   },
   "dependencies": {

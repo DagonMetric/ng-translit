@@ -39,6 +39,10 @@ export interface TranslitSubRuleItem {
      * Apply the rule only if 'when' options and user options are met.
      */
     when?: { [option: string]: boolean | string };
+    /**
+     * Group code for grouping 'OR' items.
+     */
+    orGroup?: string;
 }
 
 /**

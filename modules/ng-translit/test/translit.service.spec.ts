@@ -1118,6 +1118,45 @@ describe('TranslitService#translit', () => {
             });
     });
 
+    it("should work with 'postRules' and 'orGroup'", (done: DoneFn) => {
+        TestBed.configureTestingModule({
+            providers: [
+                TranslitService
+            ]
+        });
+
+        const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
+
+        const testRules: TranslitRulePhase[] = [{
+            rules: [
+                {
+                    from: '([\u1000-\u1021])\u1039\u1010',
+                    to: '$1\u1071',
+                    postRules: [
+                        {
+                            from: '\u1014',
+                            to: '\u108F',
+                            orGroup: 'A'
+                        },
+                        {
+                            from: '\u1014',
+                            to: '\u1090',
+                            orGroup: 'A'
+                        }
+                    ]
+                }
+            ]
+        }];
+
+        translitService.translit(
+            '\u1014\u1039\u1010',
+            'rule1',
+            testRules).subscribe(result => {
+                expect(result.outputText).toBe('\u108F\u1071', result);
+                done();
+            });
+    });
+
     it("should throw an error message if both 'ruleName' and 'rulesToUse' are not provided", () => {
         TestBed.configureTestingModule({
             providers: [

@@ -307,8 +307,19 @@ export class TranslitService {
         let curStr = inputStr;
         let previousString = traces ? inputStr : '';
 
+        const orGroupNames: string[] = [];
+
         for (let i = 0; i < subRuleItems.length; i++) {
             const subRuleItem = subRuleItems[i];
+
+            if (subRuleItem.orGroup) {
+                if (orGroupNames.includes(subRuleItem.orGroup)) {
+                    continue;
+                } else {
+                    orGroupNames.push(subRuleItem.orGroup);
+                }
+            }
+
             if (subRuleItem.when && (!subRuleItem.tplSeqName || subRuleItem.firstSeq)) {
                 const whenOptions = subRuleItem.when;
                 if (Object.keys(whenOptions).find(k => !userOptions || (whenOptions[k] !== userOptions[k]))) {

@@ -10,7 +10,7 @@
       "envOverrides": {
         "prod": {
           "copy": [
-            "README.md",
+            "../../README.md",
             "../../LICENSE"
           ],
           "bundles": true,
@@ -23,18 +23,13 @@
       "name": "ng-translit-http-loader",
       "root": "modules/ng-translit/http-loader",
       "outputPath": "dist/packages/ng-translit",
-      "libraryName": "ngTransli.httpLoader",
+      "libraryName": "ngTranslit.httpLoader",
       "externals": {
         "@dagonmetric/ng-translit": "ngTranslit"
       },
       "envOverrides": {
         "prod": {
-          "copy": [
-            {
-              "from": "README.md",
-              "to": "http-loader/README.md"
-            }
-          ],
+          "copy": [],
           "bundles": true,
           "packageJsonCopy": true
         }

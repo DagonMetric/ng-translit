@@ -1,4 +1,4 @@
-# Transliteration Modules for Angular
+# Transliteration Service for Angular
 
 [![Build Status](https://dev.azure.com/DagonMetric/ng-translit/_apis/build/status/DagonMetric.ng-translit?branchName=master)](https://dev.azure.com/DagonMetric/ng-translit/_build/latest?definitionId=8&branchName=master)
 [![Build status](https://ci.appveyor.com/api/projects/status/83mp8bintrt5nx37/branch/master?svg=true)](https://ci.appveyor.com/project/admindagonmetriccom/ng-translit/branch/master)
@@ -7,17 +7,7 @@
 [![Dependency Status](https://david-dm.org/DagonMetric/ng-translit.svg)](https://david-dm.org/DagonMetric/ng-translit)
 [![Gitter](https://badges.gitter.im/DagonMetric/general.svg)](https://gitter.im/DagonMetric/general?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-Contains transliteration modules for Angular applications which can be used in swapping letters such as α → a, ၎ → ၎င်း or Zawgyi-One to standard Myanmar Unicode.
-
-## Modules
-
-[ng-translit](modules/ng-translit)
-
-Transliteration core service package for Angular.
-
-[ng-translit-http-loader](modules/ng-translit/http-loader)
-
-Implements an HTTP client API for `TranslitRuleLoader` that relies on the Angular `HttpClient`.
+Transliteration service for Angular applications which can be used in swapping letters such as α → a, ၎ → ၎င်း or Zawgyi-One to standard Myanmar Unicode.
 
 ## Features
 
@@ -33,7 +23,72 @@ Implements an HTTP client API for `TranslitRuleLoader` that relies on the Angula
 
 ## Getting Started
 
-* [Documentation](https://github.com/DagonMetric/ng-translit/wiki)
+### Installation
+
+npm
+
+```bash
+npm install @dagonmetric/ng-translit
+```
+
+or yarn
+
+```bash
+yarn add @dagonmetric/ng-translit
+```
+
+### Module Setup (app.module.ts)
+
+The following code is a simple module setup with no rule loader.
+
+```typescript
+import { TranslitModule } from '@dagonmetric/ng-translit';
+
+@NgModule({
+  imports: [
+    // Other module imports
+
+    // ng-translit module
+    TranslitModule
+  ]
+})
+export class AppModule { }
+```
+
+### Usage (app.component.ts)
+
+```typescript
+import { Component } from '@angular/core';
+
+import { TranslitRuleItem, TranslitService } from '@dagonmetric/ng-translit';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html'
+})
+export class AppComponent {
+  constructor(private readonly _translitService: TranslitService) {
+    const zg2uniRules: TranslitRuleItem[] = [{
+      from: '\u103B([\u1000-\u1021])',
+      to: '$1\u103C'
+    },
+    {
+      from: '\u1039',
+      to: '\u103A'
+    }];
+
+    this._translitService.translit('ျမန္မာစာ', 'zg2uni', zg2uniRules)
+      .subscribe(result => {
+        // output: မြန်မာစာ
+        console.log('output: ', result.outputText);
+      });
+  }
+}
+```
+
+### Documentation
+
+* [ng-translit wiki](https://github.com/DagonMetric/ng-translit/wiki)
 
 ## Transliteration Rules
 

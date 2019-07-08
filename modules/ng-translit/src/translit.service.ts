@@ -312,12 +312,8 @@ export class TranslitService {
         for (let i = 0; i < subRuleItems.length; i++) {
             const subRuleItem = subRuleItems[i];
 
-            if (subRuleItem.orGroup) {
-                if (orGroupNames.includes(subRuleItem.orGroup)) {
-                    continue;
-                } else {
-                    orGroupNames.push(subRuleItem.orGroup);
-                }
+            if (subRuleItem.orGroup && orGroupNames.includes(subRuleItem.orGroup)) {
+                continue;
             }
 
             if (subRuleItem.when && (!subRuleItem.tplSeqName || subRuleItem.firstSeq)) {
@@ -354,6 +350,10 @@ export class TranslitService {
             const m = rightPart.match(subRuleItem.fromRegExp);
             if (m == null) {
                 continue;
+            }
+
+            if (subRuleItem.orGroup && !orGroupNames.includes(subRuleItem.orGroup)) {
+                orGroupNames.push(subRuleItem.orGroup);
             }
 
             const matchedString = m[0];

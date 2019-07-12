@@ -4,7 +4,6 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/83mp8bintrt5nx37/branch/master?svg=true)](https://ci.appveyor.com/project/admindagonmetriccom/ng-translit/branch/master)
 [![codecov](https://codecov.io/gh/DagonMetric/ng-translit/branch/master/graph/badge.svg)](https://codecov.io/gh/DagonMetric/ng-translit)
 [![npm version](https://img.shields.io/npm/v/@dagonmetric/ng-translit.svg)](https://www.npmjs.com/package/@dagonmetric/ng-translit)
-[![Dependency Status](https://david-dm.org/DagonMetric/ng-translit.svg)](https://david-dm.org/DagonMetric/ng-translit)
 [![Gitter](https://badges.gitter.im/DagonMetric/general.svg)](https://gitter.im/DagonMetric/general?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 Transliteration service for Angular applications which can be used in swapping letters such as α → a, ၎ → ၎င်း or Zawgyi-One to standard Myanmar Unicode.
@@ -15,6 +14,7 @@ Transliteration service for Angular applications which can be used in swapping l
 * Template variables or loop/sequence variables can be defined in rule to reduce JSON size and to avoid long repeated text or rule items
 * Quick test character checking for better performance
 * Post rules can be defined for step-by-step conversions
+* The `postRulesDef` and `postRulesRef` options can be used to reduce JSON size
 * Conversion trace information can be included in output result for debugging purpose
 * Conditional rules with `when` options can be used
 * Latest versions of Angular are supported

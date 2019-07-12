@@ -89,6 +89,10 @@ export interface TranslitRuleItem {
      * @minItems 1
      */
     postRules?: TranslitSubRuleItem[];
+    /**
+     * The name defined in `postRulesDef`.
+     */
+    postRulesRef?: string;
 }
 
 /**
@@ -113,6 +117,10 @@ export interface TranslitRulePhase {
      * Template loop/sequence variables definition.
      */
     tplSeq?: { [key: string]: [string, string, number][] };
+    /**
+     * Post rules definitions to be used for `postRulesRef`.
+     */
+    postRulesDef?: { [key: string]: TranslitSubRuleItem[] };
 }
 
 /**

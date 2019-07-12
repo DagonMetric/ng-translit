@@ -454,7 +454,7 @@ export class TranslitService {
             for (let j = 0; j < rulePhase.rules.length; j++) {
                 const ruleItem = rulePhase.rules[j];
                 const parsedItems =
-                    this.parseTpl(ruleItem, rulePhase.tplSeq, rulePhase.tplVar, globalTplVar, i, j);
+                    this.parseTpl(ruleItem, rulePhase.tplSeq, rulePhase.tplVar, globalTplVar, rulePhase.postRulesDef, i, j);
                 parsedRuleItems.push(...parsedItems);
             }
 
@@ -479,6 +479,7 @@ export class TranslitService {
         tplSeq?: { [key: string]: [string, string, number][] },
         tplVar?: { [key: string]: string },
         globalTplVar?: { [key: string]: string },
+        postRulesDef?: { [key: string]: TranslitSubRuleItem[] },
         phaseIndex?: number,
         ruleIndex?: number,
         subRuleIndex?: number): TranslitRuleItemParsed[] | TranslitSubRuleItemParsed[] {
@@ -500,6 +501,7 @@ export class TranslitService {
             tplSeq,
             tplVar,
             globalTplVar,
+            postRulesDef,
             phaseIndex,
             ruleIndex,
             subRuleIndex);
@@ -507,16 +509,27 @@ export class TranslitService {
         if (seqParsedItems) {
             return seqParsedItems;
         } else {
+            let postRules: TranslitSubRuleItem[] | undefined;
+            const translitRuleItem = ruleItem as TranslitRuleItem;
+            if (translitRuleItem.postRulesRef && postRulesDef && postRulesDef[translitRuleItem.postRulesRef].length > 0) {
+                postRules = JSON.parse(JSON.stringify(postRulesDef[translitRuleItem.postRulesRef])) as TranslitSubRuleItem[];
+            }
+            if (translitRuleItem.postRules) {
+                postRules = postRules || [];
+                postRules.push(...translitRuleItem.postRules);
+            }
+
             const parsedItem: TranslitRuleItemParsed = {
                 ...ruleItem,
                 index: subRuleIndex == null ? ruleIndex || 0 : subRuleIndex,
                 fromRegExp: subRuleIndex == null ? new RegExp(`^${ruleItem.from}`) : new RegExp(`${ruleItem.from}`),
-                postRules: (ruleItem as TranslitRuleItem).postRules ?
+                postRules: postRules ?
                     this.parseSubRuleItems(
-                        (ruleItem as TranslitRuleItem).postRules as TranslitSubRuleItem[],
+                        postRules,
                         tplSeq,
                         tplVar,
                         globalTplVar,
+                        postRulesDef,
                         phaseIndex,
                         ruleIndex) : undefined
             };
@@ -534,6 +547,7 @@ export class TranslitService {
         tplSeq?: { [key: string]: [string, string, number][] },
         tplVar?: { [key: string]: string },
         globalTplVar?: { [key: string]: string },
+        postRulesDef?: { [key: string]: TranslitSubRuleItem[] },
         phaseIndex?: number,
         ruleIndex?: number,
         subRuleIndex?: number): TranslitRuleItemParsed[] | TranslitSubRuleItemParsed[] | undefined {
@@ -591,6 +605,15 @@ export class TranslitService {
                 const clonedRuleItem = JSON.parse(JSON.stringify(ruleItem)) as TranslitRuleItem;
                 const fromReplaced = clonedRuleItem.from.replace(tplSeqName, currFromChar);
 
+                let postRules: TranslitSubRuleItem[] | undefined;
+                if (clonedRuleItem.postRulesRef && postRulesDef && postRulesDef[clonedRuleItem.postRulesRef].length > 0) {
+                    postRules = JSON.parse(JSON.stringify(postRulesDef[clonedRuleItem.postRulesRef])) as TranslitSubRuleItem[];
+                }
+                if (clonedRuleItem.postRules) {
+                    postRules = postRules || [];
+                    postRules.push(...clonedRuleItem.postRules);
+                }
+
                 const parsedItem: TranslitRuleItemParsed = {
                     ...clonedRuleItem,
                     index: subRuleIndex == null ? ruleIndex || 0 : subRuleIndex,
@@ -601,8 +624,8 @@ export class TranslitService {
                     from: fromReplaced,
                     fromRegExp: subRuleIndex == null ? new RegExp(`^${fromReplaced}`) : new RegExp(`${fromReplaced}`),
                     to: (clonedRuleItem.to as string).replace(tplSeqName, currToChar),
-                    postRules: clonedRuleItem.postRules ? this.parseSubRuleItems(
-                        clonedRuleItem.postRules, tplSeq, tplVar, globalTplVar, phaseIndex, ruleIndex) : undefined
+                    postRules: postRules ? this.parseSubRuleItems(
+                        postRules, tplSeq, tplVar, globalTplVar, postRulesDef, phaseIndex, ruleIndex) : undefined
                 };
 
                 seqIndex++;
@@ -642,6 +665,7 @@ export class TranslitService {
         tplSeq?: { [key: string]: [string, string, number][] },
         tplVar?: { [key: string]: string },
         globalTplVar?: { [key: string]: string },
+        postRulesDef?: { [key: string]: TranslitSubRuleItem[] },
         phaseIndex?: number,
         ruleIndex?: number): TranslitSubRuleItemParsed[] {
         const parsedSubRuleItems: TranslitSubRuleItemParsed[] = [];
@@ -649,7 +673,14 @@ export class TranslitService {
         for (let i = 0; i < subRuleItems.length; i++) {
             const subRuleItem = subRuleItems[i];
             const parsedItems =
-                this.parseTpl(subRuleItem, tplSeq, tplVar, globalTplVar, phaseIndex, ruleIndex, i) as TranslitSubRuleItemParsed[];
+                this.parseTpl(
+                    subRuleItem,
+                    tplSeq,
+                    tplVar,
+                    globalTplVar,
+                    postRulesDef,
+                    phaseIndex,
+                    ruleIndex, i) as TranslitSubRuleItemParsed[];
             parsedSubRuleItems.push(...parsedItems);
         }
 

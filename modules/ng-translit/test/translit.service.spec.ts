@@ -1157,6 +1157,88 @@ describe('TranslitService#translit', () => {
             });
     });
 
+    it("should work with 'postRulesDef' and 'postRulesRef'", (done: DoneFn) => {
+        TestBed.configureTestingModule({
+            providers: [
+                TranslitService
+            ]
+        });
+
+        const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
+
+        const testRules: TranslitRulePhase[] = [{
+            postRulesDef: {
+                prs1: [
+                    {
+                        from: '\u103B',
+                        to: '\u103A'
+                    }
+                ]
+            },
+            rules: [
+                {
+                    from: '\u1000\u1039\u1000\u103B',
+                    to: '\u1010\u1060\u103B',
+                    postRulesRef: 'prs1'
+                }
+            ]
+        }];
+
+        translitService.translit('\u1000\u1039\u1000\u103B', 'rule1', testRules)
+            .subscribe(result => {
+                expect(result.outputText).toBe('\u1010\u1060\u103A', result);
+                done();
+            });
+    });
+
+    it("should work with 'postRulesDef', 'postRulesRef', 'tplVar' and 'tplSeq'", (done: DoneFn) => {
+        TestBed.configureTestingModule({
+            providers: [
+                TranslitService
+            ]
+        });
+
+        const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
+
+        const testRules: TranslitRulePhase[] = [{
+            tplVar: {
+                '#c1': '\u1000-\u1007',
+                '#c2': '\u1000-\u1021\u103F'
+            },
+            tplSeq: {
+                '#s1': [['\u102D', '\u108B', 1], ['\u102E', '\u108C', 1]],
+                '#s2': [['\u1000', '\u1060', 4], ['\u1005', '\u1065', 1], ['\u1006', '\u1067', 3]]
+            },
+            postRulesDef: {
+                prs1: [
+                    {
+                        description: 'Should match',
+                        from: '([#c2])\u1039#s2',
+                        to: '$1#s2',
+                        start: 2,
+                        quickTests: [['\u1039', 1], ['#s2', 2]]
+                    }
+                ]
+            },
+            rules: [
+                {
+                    description: 'Should match',
+                    from: '\u1004\u103A\u1039([#c1]\u1039[#c1])\u103C\u103D\u103E\u1031#s1',
+                    to: '\u1031\u103B$1#s1',
+                    postRulesRef: 'prs1'
+                }
+            ]
+        }];
+
+        translitService.translit(
+            '\u1004\u103A\u1039\u1000\u1039\u1007\u103C\u103D\u103E\u1031\u102D',
+            'rule1',
+            testRules).subscribe(result => {
+                expect(result.outputText).toBe('\u1031\u103B\u1000\u1068\u108B', result);
+                done();
+            });
+    });
+
     it("should throw an error message if both 'ruleName' and 'rulesToUse' are not provided", () => {
         TestBed.configureTestingModule({
             providers: [

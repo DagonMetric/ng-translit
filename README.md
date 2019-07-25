@@ -1,4 +1,4 @@
-# Transliteration Service for Angular
+# Transliterate Service for Angular
 
 [![Build Status](https://dev.azure.com/DagonMetric/ng-translit/_apis/build/status/DagonMetric.ng-translit?branchName=master)](https://dev.azure.com/DagonMetric/ng-translit/_build/latest?definitionId=8&branchName=master)
 [![CircleCI](https://circleci.com/gh/DagonMetric/ng-translit/tree/master.svg?style=svg)](https://circleci.com/gh/DagonMetric/ng-translit/tree/master)

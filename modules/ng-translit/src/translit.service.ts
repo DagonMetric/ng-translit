@@ -511,7 +511,10 @@ export class TranslitService {
         } else {
             let postRules: TranslitSubRuleItem[] | undefined;
             const translitRuleItem = ruleItem as TranslitRuleItem;
-            if (translitRuleItem.postRulesRef && postRulesDef && postRulesDef[translitRuleItem.postRulesRef].length > 0) {
+            if (translitRuleItem.postRulesRef &&
+                postRulesDef &&
+                postRulesDef[translitRuleItem.postRulesRef] &&
+                postRulesDef[translitRuleItem.postRulesRef].length > 0) {
                 postRules = JSON.parse(JSON.stringify(postRulesDef[translitRuleItem.postRulesRef])) as TranslitSubRuleItem[];
             }
             if (translitRuleItem.postRules) {
@@ -606,7 +609,10 @@ export class TranslitService {
                 const fromReplaced = clonedRuleItem.from.replace(tplSeqName, currFromChar);
 
                 let postRules: TranslitSubRuleItem[] | undefined;
-                if (clonedRuleItem.postRulesRef && postRulesDef && postRulesDef[clonedRuleItem.postRulesRef].length > 0) {
+                if (clonedRuleItem.postRulesRef &&
+                    postRulesDef &&
+                    postRulesDef[clonedRuleItem.postRulesRef] &&
+                    postRulesDef[clonedRuleItem.postRulesRef].length > 0) {
                     postRules = JSON.parse(JSON.stringify(postRulesDef[clonedRuleItem.postRulesRef])) as TranslitSubRuleItem[];
                 }
                 if (clonedRuleItem.postRules) {

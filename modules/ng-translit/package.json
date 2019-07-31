@@ -1,24 +1,34 @@
 {
   "name": "@dagonmetric/ng-translit",
   "version": "0.0.0-PLACEHOLDER",
-  "description": "Transliteration service package for Angular applications which can be used in swapping letters such as α → a, ၄င်း → ၎င်း or Zawgyi-One to standard Myanmar Unicode.",
+  "description": "Transliterate service for Angular which can be used in swapping letters such as α → a, ၎ → ၎င်း or Zawgyi-One to standard Myanmar Unicode.",
   "keywords": [
+    "angular-transliterate",
     "transliteration",
     "transliterator",
     "transliterate",
+    "transliteration-service",
+    "angular",
     "alphabet-converter",
     "internationalization",
     "intl",
     "unicode-tools",
     "script-tools",
     "language-tools",
-    "angular"
+    "myanmar-tools",
+    "zawgyi-unicode-converter",
+    "transliterate-rules"
   ],
   "author": "",
   "license": "",
-  "repository": "",
-  "bugs": "",
-  "homepage": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DagonMetric/ng-translit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DagonMetric/ng-translit/issues"
+  },
+  "homepage": "https://github.com/DagonMetric/ng-translit",
   "dependencies": {
     "tslib": "^1.9.3"
   },

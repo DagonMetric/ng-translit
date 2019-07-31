@@ -90,13 +90,13 @@ export class AppComponent {
 
 * [ng-translit wiki](https://github.com/DagonMetric/ng-translit/wiki)
 
-## Transliteration Rules
+## Transliterate Rules
 
-* [zawgyi-unicode-translit-rules](https://github.com/myanmartools/zawgyi-unicode-translit-rules) - Zawgyi Unicode convert/transliterate rules in JSON.
+* [zawgyi-unicode-translit-rules](https://github.com/myanmartools/zawgyi-unicode-translit-rules) - Zawgyi Unicode convert/transliterate rules in JSON and JavaScript formats
 
 ## Live Application
 
-* [Zawgyi Unicode Converter](https://zawgyi-unicode-converter.myanmartools.org) - real world Angular Progress Web Application designed to detect & convert Myanmar font encodings between Zawgyi-One and Standard Myanmar Unicode using `@dagonmetric/ng-translit`
+* [Zawgyi Unicode Converter](https://zawgyi-unicode-converter.myanmartools.org) - Angular Progress Web Application designed to detect & convert Myanmar font encoding between Zawgyi-One and Standard Myanmar Unicode
 
 ## Feedback and Contributing
 

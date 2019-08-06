@@ -12,7 +12,7 @@ import {
     TranslitRuleLoader,
     TranslitRulePhase,
     TranslitService,
-    TranslitTraceInfo
+    TranslitTraceItem
 } from '../src';
 import { TranslitRuleStore } from '../src/translit-rule-store';
 
@@ -113,8 +113,7 @@ describe('TranslitModule#withOptions', () => {
 
         translitService.translit('\u101E\u1030\u101B\u1086\u1010\u102E', 'test', testRules, undefined, true)
             .subscribe(result => {
-                const traces = result.traces as TranslitTraceInfo[];
-                expect(traces[0].description).toBe('Phase: 1, rule: 1');
+                const traces = result.traces as TranslitTraceItem[];
                 expect(traces[0].from).toBe('\u1086');
                 expect(traces[0].to).toBe('\u103F');
                 expect(traces[0].matchedString).toBe('\u1086');

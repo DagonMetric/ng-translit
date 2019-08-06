@@ -11,7 +11,7 @@ import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
 import { Observable, Observer, of } from 'rxjs';
 import { map, share, take } from 'rxjs/operators';
 
-import { TranslitResult, TranslitTraceInfo } from './translit-result';
+import { TranslitResult, TranslitTraceItem } from './translit-result';
 import { TranslitRule, TranslitRuleItem, TranslitRulePhase, TranslitSubRuleItem } from './translit-rule';
 import { TranslitRuleLoader } from './translit-rule-loader';
 import { TRANSLIT_RULE_LOADER } from './translit-rule-loader.token';
@@ -203,7 +203,7 @@ export class TranslitService {
         inputStr: string,
         rulePhase: TranslitRulePhaseParsed,
         userOptions?: { [option: string]: boolean | string },
-        traces?: TranslitTraceInfo[]): string {
+        traces?: TranslitTraceItem[]): string {
         let outStr = '';
         let curStr = inputStr;
         let previousString = traces ? inputStr : '';
@@ -247,35 +247,40 @@ export class TranslitService {
                 if (m == null) {
                     continue;
                 }
-
                 foundRule = true;
                 const matchedString = m[0];
 
-                if (ruleItem.to != null) {
-                    curStr = curStr.replace(ruleItem.fromRegExp, ruleItem.to);
+                if (ruleItem.parsedTo != null) {
+                    curStr = curStr.replace(ruleItem.fromRegExp, ruleItem.parsedTo);
                 }
+                let currentTrace: TranslitTraceItem | undefined;
 
                 if (traces) {
                     const newString = outStr + curStr;
-                    traces.push({
-                        description: `Phase: ${rulePhase.index + 1}, rule: ${ruleItem.index + 1}`,
+                    currentTrace = {
                         from: ruleItem.from,
+                        parsedFrom: ruleItem.parsedFrom,
                         to: ruleItem.to,
+                        parsedTo: ruleItem.parsedTo,
                         matchedString,
                         previousString,
                         newString
-                    });
-
+                    };
+                    traces.push(currentTrace);
                     previousString = newString;
                 }
 
                 const rightPartSize = curStr.length - matchedString.length;
                 const newStart = curStr.length - rightPartSize;
 
-                if (ruleItem.postRules && ruleItem.to != null && curStr.length > 0) {
-                    curStr = this.applySubRuleItems(curStr, ruleItem.postRules, userOptions, traces, rulePhase.index, ruleItem.index);
+                if (ruleItem.parsedPostRules && ruleItem.parsedTo != null && curStr.length > 0) {
+                    curStr = this.applySubRuleItems(curStr, ruleItem.parsedPostRules, userOptions, currentTrace);
+                    if (currentTrace) {
+                        const newString = outStr + curStr;
+                        currentTrace.newString = newString;
+                        previousString = newString;
+                    }
                 }
-
                 if (ruleItem.seqIndex != null && ruleItem.totalSeqCount) {
                     i += ruleItem.totalSeqCount - ruleItem.seqIndex - 1;
                 }
@@ -283,7 +288,6 @@ export class TranslitService {
                 if (ruleItem.revisit) {
                     continue;
                 }
-
                 outStr += curStr.substring(0, newStart);
                 curStr = curStr.substring(newStart);
             }
@@ -301,11 +305,9 @@ export class TranslitService {
         inputStr: string,
         subRuleItems: TranslitSubRuleItemParsed[],
         userOptions?: { [option: string]: boolean | string },
-        traces?: TranslitTraceInfo[],
-        phaseIndex?: number,
-        ruleIndex?: number): string {
+        currentTrace?: TranslitTraceItem): string {
         let curStr = inputStr;
-        let previousString = traces ? inputStr : '';
+        let previousString = currentTrace ? inputStr : '';
 
         const orGroupNames: string[] = [];
 
@@ -357,18 +359,19 @@ export class TranslitService {
             }
 
             const matchedString = m[0];
-            curStr = leftPart + rightPart.replace(subRuleItem.fromRegExp, subRuleItem.to);
+            curStr = leftPart + rightPart.replace(subRuleItem.fromRegExp, subRuleItem.parsedTo);
 
-            if (traces) {
-                traces.push({
-                    description: `Phase: ${(phaseIndex || 0) + 1}, rule: ${(ruleIndex || 0) + 1}, subrule: ${subRuleItem.index + 1}`,
+            if (currentTrace) {
+                currentTrace.postRuleTraces = currentTrace.postRuleTraces || [];
+                currentTrace.postRuleTraces.push({
                     from: subRuleItem.from,
+                    parsedFrom: subRuleItem.parsedFrom,
                     to: subRuleItem.to,
+                    parsedTo: subRuleItem.parsedTo,
                     matchedString,
                     previousString,
                     newString: curStr
                 });
-
                 previousString = curStr;
             }
 
@@ -486,18 +489,26 @@ export class TranslitService {
         const mergedTplVar: { [key: string]: string } = { ...globalTplVar, ...tplVar };
         const varNames = Object.keys(mergedTplVar).sort().reverse();
 
+        const parsedItem: TranslitRuleItemParsed = {
+            ...ruleItem,
+            index: subRuleIndex == null ? ruleIndex || 0 : subRuleIndex,
+            parsedFrom: ruleItem.from,
+            fromRegExp: undefined as unknown as RegExp,
+            parsedTo: ruleItem.to
+        };
+
         for (const varName of varNames) {
             const value = mergedTplVar[varName];
-            if (ruleItem.from.includes(varName)) {
-                ruleItem.from = ruleItem.from.replace(new RegExp(varName, 'g'), value);
+            if (parsedItem.parsedFrom.includes(varName)) {
+                parsedItem.parsedFrom = parsedItem.parsedFrom.replace(new RegExp(varName, 'g'), value);
             }
-            if (ruleItem.to && ruleItem.to.includes(varName)) {
-                ruleItem.to = ruleItem.to.replace(new RegExp(varName, 'g'), value);
+            if (parsedItem.parsedTo && parsedItem.parsedTo.includes(varName)) {
+                parsedItem.parsedTo = parsedItem.parsedTo.replace(new RegExp(varName, 'g'), value);
             }
         }
 
         const seqParsedItems = this.parseTplSeq(
-            ruleItem,
+            parsedItem,
             tplSeq,
             tplVar,
             globalTplVar,
@@ -510,35 +521,31 @@ export class TranslitService {
             return seqParsedItems;
         } else {
             let postRules: TranslitSubRuleItem[] | undefined;
-            const translitRuleItem = ruleItem as TranslitRuleItem;
-            if (translitRuleItem.postRulesRef &&
+            if (parsedItem.postRulesRef &&
                 postRulesDef &&
-                postRulesDef[translitRuleItem.postRulesRef] &&
-                postRulesDef[translitRuleItem.postRulesRef].length > 0) {
-                postRules = JSON.parse(JSON.stringify(postRulesDef[translitRuleItem.postRulesRef])) as TranslitSubRuleItem[];
+                postRulesDef[parsedItem.postRulesRef] &&
+                postRulesDef[parsedItem.postRulesRef].length > 0) {
+                postRules = JSON.parse(JSON.stringify(postRulesDef[parsedItem.postRulesRef])) as TranslitSubRuleItem[];
             }
-            if (translitRuleItem.postRules) {
+            if (parsedItem.postRules) {
                 postRules = postRules || [];
-                postRules.push(...translitRuleItem.postRules);
+                postRules.push(...parsedItem.postRules);
             }
 
-            const parsedItem: TranslitRuleItemParsed = {
-                ...ruleItem,
-                index: subRuleIndex == null ? ruleIndex || 0 : subRuleIndex,
-                fromRegExp: subRuleIndex == null ? new RegExp(`^${ruleItem.from}`) : new RegExp(`${ruleItem.from}`),
-                postRules: postRules ?
-                    this.parseSubRuleItems(
-                        postRules,
-                        tplSeq,
-                        tplVar,
-                        globalTplVar,
-                        postRulesDef,
-                        phaseIndex,
-                        ruleIndex) : undefined
-            };
+            parsedItem.fromRegExp = subRuleIndex == null ? new RegExp(`^${parsedItem.parsedFrom}`) : new RegExp(`${parsedItem.parsedFrom}`);
+            if (postRules) {
+                parsedItem.parsedPostRules = this.parseSubRuleItems(
+                    postRules,
+                    tplSeq,
+                    tplVar,
+                    globalTplVar,
+                    postRulesDef,
+                    phaseIndex,
+                    ruleIndex);
+            }
 
-            if (subRuleIndex == null && !parsedItem.quickTests && parsedItem.from.length === 1) {
-                parsedItem.quickTests = [[parsedItem.from, 0]];
+            if (subRuleIndex == null && !parsedItem.quickTests && parsedItem.parsedFrom.length === 1) {
+                parsedItem.quickTests = [[parsedItem.parsedFrom, 0]];
             }
 
             return [parsedItem];
@@ -546,7 +553,7 @@ export class TranslitService {
     }
 
     private parseTplSeq(
-        ruleItem: TranslitRuleItem | TranslitSubRuleItem,
+        parsedRuleItem: TranslitRuleItemParsed | TranslitSubRuleItemParsed,
         tplSeq?: { [key: string]: [string, string, number][] },
         tplVar?: { [key: string]: string },
         globalTplVar?: { [key: string]: string },
@@ -558,7 +565,7 @@ export class TranslitService {
             return undefined;
 
         }
-        const tplSeqName = Object.keys(tplSeq).sort().reverse().find(k => ruleItem.from.includes(k));
+        const tplSeqName = Object.keys(tplSeq).sort().reverse().find(k => parsedRuleItem.parsedFrom.includes(k));
         if (!tplSeqName) {
             return undefined;
         }
@@ -568,11 +575,11 @@ export class TranslitService {
         const posSuffix = `phase: ${(phaseIndex || 0) + 1}, rule: ${(ruleIndex || 0) + 1}${subPosSuffix}`;
         const invalidTplValueMsg = `${errMsgPrefix}, invalid template value definition, ${posSuffix}.`;
 
-        if (!ruleItem.to) {
+        if (!parsedRuleItem.parsedTo) {
             throw new Error(`${errMsgPrefix}, to use 'tplSeq', 'to' value is required, ${posSuffix}.`);
         }
 
-        if (!ruleItem.to.includes(tplSeqName)) {
+        if (!parsedRuleItem.parsedTo.includes(tplSeqName)) {
             throw new Error(`${errMsgPrefix}, tplSeq name: '${tplSeqName}' could not be found in 'to' value, ${posSuffix}.`);
         }
 
@@ -605,8 +612,8 @@ export class TranslitService {
                 const currFromChar = String.fromCodePoint(currFrom);
                 const currToChar = String.fromCodePoint(currTo);
 
-                const clonedRuleItem = JSON.parse(JSON.stringify(ruleItem)) as TranslitRuleItem;
-                const fromReplaced = clonedRuleItem.from.replace(tplSeqName, currFromChar);
+                const clonedRuleItem = JSON.parse(JSON.stringify(parsedRuleItem)) as TranslitRuleItemParsed;
+                const fromReplaced = clonedRuleItem.parsedFrom.replace(tplSeqName, currFromChar);
 
                 let postRules: TranslitSubRuleItem[] | undefined;
                 if (clonedRuleItem.postRulesRef &&
@@ -627,10 +634,10 @@ export class TranslitService {
                     tplSeqName,
                     firstSeq,
                     totalSeqCount,
-                    from: fromReplaced,
+                    parsedFrom: fromReplaced,
                     fromRegExp: subRuleIndex == null ? new RegExp(`^${fromReplaced}`) : new RegExp(`${fromReplaced}`),
-                    to: (clonedRuleItem.to as string).replace(tplSeqName, currToChar),
-                    postRules: postRules ? this.parseSubRuleItems(
+                    parsedTo: (clonedRuleItem.parsedTo as string).replace(tplSeqName, currToChar),
+                    parsedPostRules: postRules ? this.parseSubRuleItems(
                         postRules, tplSeq, tplVar, globalTplVar, postRulesDef, phaseIndex, ruleIndex) : undefined
                 };
 
@@ -649,19 +656,19 @@ export class TranslitService {
         return parsedRuleItems;
     }
 
-    private parseQuickTestsForSeq(ruleItem: TranslitRuleItemParsed, name: string, value: string, firstSeq: boolean): void {
-        if (!ruleItem.quickTests) {
+    private parseQuickTestsForSeq(parsedRuleItem: TranslitRuleItemParsed, name: string, value: string, firstSeq: boolean): void {
+        if (!parsedRuleItem.quickTests) {
             return;
         }
 
-        for (let i = 0; i < ruleItem.quickTests.length; i++) {
-            const qt = ruleItem.quickTests[i];
+        for (let i = 0; i < parsedRuleItem.quickTests.length; i++) {
+            const qt = parsedRuleItem.quickTests[i];
             if (qt[0] === name) {
                 qt[0] = value;
-                ruleItem.quickTests[i] = qt;
+                parsedRuleItem.quickTests[i] = qt;
             } else if (firstSeq) {
-                ruleItem.seqQuickTests = ruleItem.seqQuickTests || [];
-                ruleItem.seqQuickTests.push([qt[0], qt[1]]);
+                parsedRuleItem.seqQuickTests = parsedRuleItem.seqQuickTests || [];
+                parsedRuleItem.seqQuickTests.push([qt[0], qt[1]]);
             }
         }
     }

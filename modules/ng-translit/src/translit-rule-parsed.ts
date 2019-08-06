@@ -10,7 +10,9 @@ import { TranslitRule, TranslitRuleItem, TranslitRulePhase, TranslitSubRuleItem 
 
 export interface TranslitSubRuleItemParsed extends TranslitSubRuleItem {
     index: number;
+    parsedFrom: string;
     fromRegExp: RegExp;
+    parsedTo: string;
     tplSeqName?: string;
     firstSeq?: boolean;
     totalSeqCount?: number;
@@ -20,13 +22,15 @@ export interface TranslitSubRuleItemParsed extends TranslitSubRuleItem {
 
 export interface TranslitRuleItemParsed extends TranslitRuleItem {
     index: number;
+    parsedFrom: string;
     fromRegExp: RegExp;
+    parsedTo?: string;
     tplSeqName?: string;
     firstSeq?: boolean;
     totalSeqCount?: number;
     seqIndex?: number;
     seqQuickTests?: [string, number][];
-    postRules?: TranslitSubRuleItemParsed[];
+    parsedPostRules?: TranslitSubRuleItemParsed[];
 }
 
 export interface TranslitRulePhaseParsed extends TranslitRulePhase {

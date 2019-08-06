@@ -9,21 +9,25 @@
 // tslint:disable: no-reserved-keywords
 
 /**
- * The transliteration trace information.
+ * The transliteration trace sub Item.
  */
-export interface TranslitTraceInfo {
-    /**
-     * The description of applied rule item information.
-     */
-    description: string;
+export interface TranslitTraceSubItem {
     /**
      * The 'from' text of rule item.
      */
     from: string;
     /**
+     * The 'from' (parsed) of rule item.
+     */
+    parsedFrom: string;
+    /**
      * The 'to' text of rule item.
      */
     to?: string;
+    /**
+     * The 'to' (parsed) of rule item.
+     */
+    parsedTo?: string;
     /**
      * The matched string.
      */
@@ -36,6 +40,44 @@ export interface TranslitTraceInfo {
      * The replaced new string.
      */
     newString: string;
+}
+
+/**
+ * The transliteration trace information Item.
+ */
+export interface TranslitTraceItem {
+    /**
+     * The 'from' text of rule item.
+     */
+    from: string;
+    /**
+     * The 'from' (parsed) of rule item.
+     */
+    parsedFrom: string;
+    /**
+     * The 'to' text of rule item.
+     */
+    to?: string;
+    /**
+     * The 'to' (parsed) of rule item.
+     */
+    parsedTo?: string;
+    /**
+     * The matched string.
+     */
+    matchedString: string;
+    /**
+     * The previous string.
+     */
+    previousString: string;
+    /**
+     * The replaced new string.
+     */
+    newString: string;
+    /**
+     * Trace information for post rule items.
+     */
+    postRuleTraces?: TranslitTraceSubItem[];
 }
 
 /**
@@ -57,5 +99,5 @@ export interface TranslitResult {
     /**
      * Transliteration information for debugging.
      */
-    traces?: TranslitTraceInfo[];
+    traces?: TranslitTraceItem[];
 }

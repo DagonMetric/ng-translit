@@ -116,9 +116,9 @@ describe('TranslitModule#withOptions', () => {
                 const traces = result.traces as TranslitTraceItem[];
                 expect(traces[0].from).toBe('\u1086');
                 expect(traces[0].to).toBe('\u103F');
+                expect(traces[0].inputString).toBe('\u1086\u1010\u102E');
                 expect(traces[0].matchedString).toBe('\u1086');
-                expect(traces[0].previousString).toBe('\u101E\u1030\u101B\u1086\u1010\u102E');
-                expect(traces[0].newString).toBe('\u101E\u1030\u101B\u103F\u1010\u102E');
+                expect(traces[0].replacedString).toBe('\u103F');
                 done();
             });
     });

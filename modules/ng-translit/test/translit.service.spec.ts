@@ -501,9 +501,9 @@ describe('TranslitService#translit', () => {
                 const traces = result.traces as TranslitTraceItem[];
                 expect(traces[0].from).toBe('\u1086');
                 expect(traces[0].to).toBe('\u103F');
+                expect(traces[0].inputString).toBe('\u1086\u1010\u102E');
                 expect(traces[0].matchedString).toBe('\u1086');
-                expect(traces[0].previousString).toBe('\u101E\u1030\u101B\u1086\u1010\u102E');
-                expect(traces[0].newString).toBe('\u101E\u1030\u101B\u103F\u1010\u102E');
+                expect(traces[0].replacedString).toBe('\u103F');
                 done();
             });
     });
@@ -756,34 +756,6 @@ describe('TranslitService#translit', () => {
         translitService.translit('\u1040\u1040', 'rule1', testRules)
             .subscribe(result => {
                 expect(result.outputText).toBe('\u101D\u1040', result);
-                done();
-            });
-    });
-
-    it("should work with 'revisit' rule option", (done: DoneFn) => {
-        TestBed.configureTestingModule({
-            providers: [
-                TranslitService
-            ]
-        });
-
-        const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
-
-        const testRules: TranslitRulePhase[] = [{
-            rules: [{
-                from: '\u1040',
-                to: '\u101D',
-                revisit: true
-            },
-            {
-                from: '\u101D\u1031',
-                to: '\u1031\u101D'
-            }]
-        }];
-
-        translitService.translit('\u1040\u1031', 'rule1', testRules)
-            .subscribe(result => {
-                expect(result.outputText).toEqual('\u1031\u101D', result);
                 done();
             });
     });

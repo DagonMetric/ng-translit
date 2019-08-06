@@ -249,7 +249,6 @@ export class TranslitService {
                 }
                 foundRule = true;
                 const matchedString = m[0];
-
                 if (ruleItem.parsedTo != null) {
                     curStr = curStr.replace(ruleItem.fromRegExp, ruleItem.parsedTo);
                 }
@@ -272,9 +271,10 @@ export class TranslitService {
 
                 const rightPartSize = curStr.length - matchedString.length;
                 const newStart = curStr.length - rightPartSize;
-
-                if (ruleItem.parsedPostRules && ruleItem.parsedTo != null && curStr.length > 0) {
-                    curStr = this.applySubRuleItems(curStr, ruleItem.parsedPostRules, userOptions, currentTrace);
+                if (ruleItem.parsedPostRules && ruleItem.parsedTo != null && matchedString.length > 0) {
+                    const subInput = matchedString.replace(ruleItem.fromRegExp, ruleItem.parsedTo);
+                    const subReplaced = this.applySubRuleItems(subInput, ruleItem.parsedPostRules, userOptions, currentTrace);
+                     curStr = curStr.length > subInput.length ? subReplaced + curStr.substring(subInput.length) : subReplaced;
                     if (currentTrace) {
                         const newString = outStr + curStr;
                         currentTrace.newString = newString;

@@ -29,17 +29,17 @@ export interface TranslitTraceSubItem {
      */
     parsedTo?: string;
     /**
+     * The input string.
+     */
+    inputString: string;
+    /**
      * The matched string.
      */
     matchedString: string;
     /**
-     * The previous string.
+     * The replaced string.
      */
-    previousString: string;
-    /**
-     * The replaced new string.
-     */
-    newString: string;
+    replacedString: string;
 }
 
 /**
@@ -63,17 +63,17 @@ export interface TranslitTraceItem {
      */
     parsedTo?: string;
     /**
+     * The input string.
+     */
+    inputString: string;
+    /**
      * The matched string.
      */
     matchedString: string;
     /**
-     * The previous string.
+     * The replaced string.
      */
-    previousString: string;
-    /**
-     * The replaced new string.
-     */
-    newString: string;
+    replacedString: string;
     /**
      * Trace information for post rule items.
      */

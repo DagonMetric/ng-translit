@@ -199,6 +199,7 @@ export class TranslitService {
         return translitResult;
     }
 
+    // tslint:disable-next-line: max-func-body-length
     private applyRulePhase(
         inputStr: string,
         rulePhase: TranslitRulePhaseParsed,
@@ -206,10 +207,10 @@ export class TranslitService {
         traces?: TranslitTraceItem[]): string {
         let outStr = '';
         let curStr = inputStr;
-        let previousString = traces ? inputStr : '';
 
         while (curStr.length > 0) {
             let foundRule = false;
+
             for (let i = 0; i < rulePhase.rules.length; i++) {
                 const ruleItem = rulePhase.rules[i];
                 if (ruleItem.when && (!ruleItem.tplSeqName || ruleItem.firstSeq)) {
@@ -247,49 +248,43 @@ export class TranslitService {
                 if (m == null) {
                     continue;
                 }
-                foundRule = true;
-                const matchedString = m[0];
-                if (ruleItem.parsedTo != null) {
-                    curStr = curStr.replace(ruleItem.fromRegExp, ruleItem.parsedTo);
-                }
-                let currentTrace: TranslitTraceItem | undefined;
 
+                foundRule = true;
+
+                const matchedString = m[0];
+                let replacedString: string;
+
+                if (ruleItem.parsedTo != null) {
+                    replacedString = matchedString.replace(ruleItem.fromRegExp, ruleItem.parsedTo);
+                    // curStr = curStr.replace(ruleItem.fromRegExp, ruleItem.parsedTo);
+                } else {
+                    replacedString = matchedString;
+                }
+
+                let currentTrace: TranslitTraceItem | undefined;
                 if (traces) {
-                    const newString = outStr + curStr;
                     currentTrace = {
                         from: ruleItem.from,
                         parsedFrom: ruleItem.parsedFrom,
                         to: ruleItem.to,
                         parsedTo: ruleItem.parsedTo,
+                        inputString: curStr,
                         matchedString,
-                        previousString,
-                        newString
+                        replacedString
                     };
                     traces.push(currentTrace);
-                    previousString = newString;
                 }
 
-                const rightPartSize = curStr.length - matchedString.length;
-                const newStart = curStr.length - rightPartSize;
-                if (ruleItem.parsedPostRules && ruleItem.parsedTo != null && matchedString.length > 0) {
-                    const subInput = matchedString.replace(ruleItem.fromRegExp, ruleItem.parsedTo);
-                    const subReplaced = this.applySubRuleItems(subInput, ruleItem.parsedPostRules, userOptions, currentTrace);
-                     curStr = curStr.length > subInput.length ? subReplaced + curStr.substring(subInput.length) : subReplaced;
-                    if (currentTrace) {
-                        const newString = outStr + curStr;
-                        currentTrace.newString = newString;
-                        previousString = newString;
-                    }
+                if (ruleItem.parsedPostRules && ruleItem.parsedTo != null && replacedString.length > 0) {
+                    replacedString = this.applySubRuleItems(replacedString, ruleItem.parsedPostRules, userOptions, currentTrace);
                 }
+
                 if (ruleItem.seqIndex != null && ruleItem.totalSeqCount) {
                     i += ruleItem.totalSeqCount - ruleItem.seqIndex - 1;
                 }
 
-                if (ruleItem.revisit) {
-                    continue;
-                }
-                outStr += curStr.substring(0, newStart);
-                curStr = curStr.substring(newStart);
+                outStr += replacedString;
+                curStr = curStr.substring(matchedString.length);
             }
 
             if (!foundRule) {
@@ -307,8 +302,6 @@ export class TranslitService {
         userOptions?: { [option: string]: boolean | string },
         currentTrace?: TranslitTraceItem): string {
         let curStr = inputStr;
-        let previousString = currentTrace ? inputStr : '';
-
         const orGroupNames: string[] = [];
 
         for (let i = 0; i < subRuleItems.length; i++) {
@@ -359,7 +352,7 @@ export class TranslitService {
             }
 
             const matchedString = m[0];
-            curStr = leftPart + rightPart.replace(subRuleItem.fromRegExp, subRuleItem.parsedTo);
+            const replacedString = leftPart + rightPart.replace(subRuleItem.fromRegExp, subRuleItem.parsedTo);
 
             if (currentTrace) {
                 currentTrace.postRuleTraces = currentTrace.postRuleTraces || [];
@@ -368,12 +361,13 @@ export class TranslitService {
                     parsedFrom: subRuleItem.parsedFrom,
                     to: subRuleItem.to,
                     parsedTo: subRuleItem.parsedTo,
+                    inputString: curStr,
                     matchedString,
-                    previousString,
-                    newString: curStr
+                    replacedString
                 });
-                previousString = curStr;
             }
+
+            curStr = replacedString;
 
             if (subRuleItem.seqIndex != null && subRuleItem.totalSeqCount) {
                 i += subRuleItem.totalSeqCount - subRuleItem.seqIndex - 1;

@@ -68,10 +68,6 @@ export interface TranslitRuleItem {
      */
     matchOnStart?: boolean;
     /**
-     * Set true to revisit to the matched start after replacing.
-     */
-    revisit?: boolean;
-    /**
      * Minimum input string length for quick checking.
      * @minimum 1
      */

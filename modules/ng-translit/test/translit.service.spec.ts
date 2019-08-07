@@ -771,7 +771,7 @@ describe('TranslitService#translit', () => {
 
         const testRules: TranslitRulePhase[] = [{
             rules: [{
-                from: '[\u1040-\u1049]'
+                from: '\u1040\u1040'
             },
             {
                 from: '\u1040',
@@ -779,9 +779,9 @@ describe('TranslitService#translit', () => {
             }]
         }];
 
-        translitService.translit('\u1040\u1040', 'rule1', testRules)
+        translitService.translit('\u1040\u1040\u1040', 'rule1', testRules)
             .subscribe(result => {
-                expect(result.outputText).toBe('\u1040\u101D', result);
+                expect(result.outputText).toBe('\u1040\u1040\u101D', result);
                 done();
             });
     });

@@ -222,23 +222,27 @@ export class TranslitService {
                         continue;
                     }
                 }
+
                 if (ruleItem.matchOnStart && outStr.length > 0) {
                     if (ruleItem.firstSeq && ruleItem.totalSeqCount) {
                         i += ruleItem.totalSeqCount - 1;
                     }
                     continue;
                 }
+
                 if (ruleItem.minLength != null && curStr.length < ruleItem.minLength) {
                     if (ruleItem.firstSeq && ruleItem.totalSeqCount) {
                         i += ruleItem.totalSeqCount - 1;
                     }
                     continue;
                 }
+
                 if (ruleItem.seqQuickTests && ruleItem.totalSeqCount &&
                     ruleItem.seqQuickTests.find(qt => qt[1] >= curStr.length || curStr[qt[1]] !== qt[0])) {
                     i += ruleItem.totalSeqCount - 1;
                     continue;
                 }
+
                 if (ruleItem.quickTests && ruleItem.quickTests.length > 0 &&
                     ruleItem.quickTests.find(qt => qt[1] >= curStr.length || curStr[qt[1]] !== qt[0])) {
                     continue;
@@ -256,7 +260,6 @@ export class TranslitService {
 
                 if (ruleItem.parsedTo != null) {
                     replacedString = matchedString.replace(ruleItem.fromRegExp, ruleItem.parsedTo);
-                    // curStr = curStr.replace(ruleItem.fromRegExp, ruleItem.parsedTo);
                 } else {
                     replacedString = matchedString;
                 }
@@ -285,6 +288,10 @@ export class TranslitService {
 
                 outStr += replacedString;
                 curStr = curStr.substring(matchedString.length);
+
+                if (foundRule) {
+                    break;
+                }
             }
 
             if (!foundRule) {

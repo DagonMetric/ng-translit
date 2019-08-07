@@ -77,6 +77,10 @@ export interface TranslitRuleItem {
      */
     quickTests?: [string, number][];
     /**
+     * Regular expression pattern for checking previous left part string.
+     */
+    left?: string;
+    /**
      * Apply the rule only if 'when' options and user options are met.
      */
     when?: { [option: string]: boolean | string };

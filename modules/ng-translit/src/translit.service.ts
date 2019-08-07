@@ -248,6 +248,23 @@ export class TranslitService {
                     continue;
                 }
 
+                if (ruleItem.leftRegExp != null) {
+                    if (outStr.length > 0) {
+                        const leftMatch = outStr.match(ruleItem.leftRegExp);
+                        if (leftMatch == null) {
+                            if (ruleItem.firstSeq && ruleItem.totalSeqCount) {
+                                i += ruleItem.totalSeqCount - 1;
+                            }
+                            continue;
+                        }
+                    } else {
+                        if (ruleItem.firstSeq && ruleItem.totalSeqCount) {
+                            i += ruleItem.totalSeqCount - 1;
+                        }
+                        continue;
+                    }
+                }
+
                 const m = curStr.match(ruleItem.fromRegExp);
                 if (m == null) {
                     continue;
@@ -273,7 +290,9 @@ export class TranslitService {
                         parsedTo: ruleItem.parsedTo,
                         inputString: curStr,
                         matchedString,
-                        replacedString
+                        replacedString,
+                        left: ruleItem.left,
+                        parsedLeft: ruleItem.parsedLeft
                     };
                     traces.push(currentTrace);
                 }
@@ -495,7 +514,8 @@ export class TranslitService {
             index: subRuleIndex == null ? ruleIndex || 0 : subRuleIndex,
             parsedFrom: ruleItem.from,
             fromRegExp: undefined as unknown as RegExp,
-            parsedTo: ruleItem.to
+            parsedTo: ruleItem.to,
+            parsedLeft: (ruleItem as TranslitRuleItem).left
         };
 
         for (const varName of varNames) {
@@ -505,6 +525,9 @@ export class TranslitService {
             }
             if (parsedItem.parsedTo && parsedItem.parsedTo.includes(varName)) {
                 parsedItem.parsedTo = parsedItem.parsedTo.replace(new RegExp(varName, 'g'), value);
+            }
+            if (parsedItem.parsedLeft && parsedItem.parsedLeft.includes(varName)) {
+                parsedItem.parsedLeft = parsedItem.parsedLeft.replace(new RegExp(varName, 'g'), value);
             }
         }
 
@@ -534,6 +557,9 @@ export class TranslitService {
             }
 
             parsedItem.fromRegExp = subRuleIndex == null ? new RegExp(`^${parsedItem.parsedFrom}`) : new RegExp(`${parsedItem.parsedFrom}`);
+            if (parsedItem.parsedLeft) {
+                parsedItem.leftRegExp = new RegExp(`${parsedItem.parsedLeft}$`);
+            }
             if (postRules) {
                 parsedItem.parsedPostRules = this.parseSubRuleItems(
                     postRules,

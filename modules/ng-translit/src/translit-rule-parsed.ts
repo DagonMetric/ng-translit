@@ -30,6 +30,8 @@ export interface TranslitRuleItemParsed extends TranslitRuleItem {
     totalSeqCount?: number;
     seqIndex?: number;
     seqQuickTests?: [string, number][];
+    parsedLeft?: string;
+    leftRegExp?: RegExp;
     parsedPostRules?: TranslitSubRuleItemParsed[];
 }
 

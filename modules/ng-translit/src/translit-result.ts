@@ -75,6 +75,14 @@ export interface TranslitTraceItem {
      */
     replacedString: string;
     /**
+     * The previous left part string checking.
+     */
+    left?: string;
+    /**
+     * The 'left' (parsed) of rule item.
+     */
+    parsedLeft?: string;
+    /**
      * Trace information for post rule items.
      */
     postRuleTraces?: TranslitTraceSubItem[];

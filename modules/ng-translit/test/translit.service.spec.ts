@@ -959,6 +959,49 @@ describe('TranslitService#translit', () => {
             });
     });
 
+    it("should work with 'left' rule options", (done: DoneFn) => {
+        TestBed.configureTestingModule({
+            providers: [
+                TranslitService
+            ]
+        });
+
+        const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
+
+        const testRules: TranslitRulePhase[] = [{
+            tplVar: {
+                '#c': '\u1000-\u1005'
+            },
+            rules: [
+                {
+                    from: '\u103D',
+                    to: '\u103C'
+                },
+                {
+                    description: 'skip',
+                    from: '([\u1000-\u1021])\u1037',
+                    to: '$1\u1037',
+                    left: '[#c]'
+                },
+                {
+                    from: '\u1037',
+                    to: '\u1095',
+                    left: '\u103C'
+                }
+            ]
+        }];
+
+        translitService.translit(
+            '\u1006\u103D\u1037',
+            'rule1',
+            testRules,
+            { flag1: true, flag2: true },
+            true).subscribe(result => {
+                expect(result.outputText).toBe('\u1006\u103c\u1095', result);
+                done();
+            });
+    });
+
     it("should work with 'postRules' and 'when'", (done: DoneFn) => {
         TestBed.configureTestingModule({
             providers: [

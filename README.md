@@ -17,6 +17,7 @@ Transliteration service for Angular applications which can be used in swapping l
 * The `postRulesDef` and `postRulesRef` options can be used to reduce JSON size
 * Conversion trace information can be included in output result for debugging purpose
 * Conditional rules with `when` options can be used
+* Previous replaced left part string checking with `left` rule option
 * Latest versions of Angular are supported
 * Compatible with Angular Universal (Server Side Rendering - SSR)
 * Powered with RxJS

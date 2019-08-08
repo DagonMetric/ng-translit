@@ -842,12 +842,12 @@ describe('TranslitService#translit', () => {
             rules: [{
                 from: '\u1084(\u1000)\u1060',
                 to: '$1',
-                quickTests: [['\u1060', 1]]
+                quickTest: { '\u1060': 1 }
             },
             {
                 from: '\u1084(\u1000)\u1060',
                 to: '$1\u1039$1\u103C',
-                quickTests: [['\u1060', 2]]
+                quickTest: { '\u1060': 2 }
             }]
         }];
 
@@ -874,13 +874,14 @@ describe('TranslitService#translit', () => {
             rules: [{
                 from: '([\u1006\u1010\u1011])\u1039#s1',
                 to: '$1#s1',
-                quickTests: [['\u1039', 1], ['#s1', 2]]
+                quickTest: { '\u1039': 1, '#s1': 2 }
             },
             {
                 from: '\u1039#s1',
                 to: '#s1',
-                quickTests: [['\u1039', 0]]
-            }]
+                quickTest: { '\u1039': 0 }
+            }
+            ]
         }];
 
         translitService.translit('\u1010\u1039\u1010', 'rule1', testRules)
@@ -987,8 +988,7 @@ describe('TranslitService#translit', () => {
                             description: 'Should match',
                             from: '([#c2])\u1039#s2',
                             to: '$1#s2',
-                            start: 2,
-                            quickTests: [['\u1039', 1], ['#s2', 2]]
+                            start: 2
                         }
                     ]
                 }
@@ -1100,14 +1100,12 @@ describe('TranslitService#translit', () => {
                             description: 'Should match',
                             from: '([#c2])\u1039#s2',
                             to: '$1#s2',
-                            start: 2,
-                            quickTests: [['\u1039', 1], ['#s2', 2]]
+                            start: 2
                         },
                         {
                             description: 'Should not match',
                             from: '([#c2])\u1039#s2',
-                            to: '$1#s2',
-                            quickTests: [['\u1039', 2], ['#s2', 3]]
+                            to: '$1#s2'
                         },
                         {
                             description: 'Should not match',
@@ -1274,8 +1272,7 @@ describe('TranslitService#translit', () => {
                         description: 'Should match',
                         from: '([#c2])\u1039#s2',
                         to: '$1#s2',
-                        start: 2,
-                        quickTests: [['\u1039', 1], ['#s2', 2]]
+                        start: 2
                     }
                 ]
             },

@@ -32,10 +32,6 @@ export interface TranslitSubRuleItem {
      */
     start?: number;
     /**
-     * Array of [char, index] for quick checking.
-     */
-    quickTests?: [string, number][];
-    /**
      * Apply the rule only if 'when' options and user options are met.
      */
     when?: { [option: string]: boolean | string };
@@ -73,9 +69,9 @@ export interface TranslitRuleItem {
      */
     minLength?: number;
     /**
-     * Array of [char, index] for quick checking.
+     * The key value pairs of character string and its index for quick checking.
      */
-    quickTests?: [string, number][];
+    quickTest?: { [key: string]: number };
     /**
      * Regular expression pattern for checking previous left part string.
      */
@@ -90,7 +86,7 @@ export interface TranslitRuleItem {
      */
     postRules?: TranslitSubRuleItem[];
     /**
-     * The `orGroup` and `start` index for `postRules` items.
+     * The key value pair of `orGroup` and `start` index for `postRules` items.
      */
     postRulesStart?: { [orGroup: string]: number };
     /**

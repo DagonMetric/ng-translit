@@ -243,9 +243,11 @@ export class TranslitService {
                     continue;
                 }
 
-                if (ruleItem.quickTests && ruleItem.quickTests.length > 0 &&
-                    ruleItem.quickTests.find(qt => qt[1] >= curStr.length || curStr[qt[1]] !== qt[0])) {
-                    continue;
+                if (ruleItem.quickTest) {
+                    const quickTest = ruleItem.quickTest;
+                    if (Object.keys(quickTest).find(key => quickTest[key] >= curStr.length || curStr[quickTest[key]] !== key)) {
+                        continue;
+                    }
                 }
 
                 if (ruleItem.leftRegExp != null) {
@@ -357,16 +359,6 @@ export class TranslitService {
 
             const leftPart = start > 0 ? curStr.substring(0, start) : '';
             const rightPart = start > 0 ? curStr.substring(start) : curStr;
-
-            if (subRuleItem.seqQuickTests && subRuleItem.totalSeqCount &&
-                subRuleItem.seqQuickTests.find(qt => qt[1] >= rightPart.length || rightPart[qt[1]] !== qt[0])) {
-                i += subRuleItem.totalSeqCount - 1;
-                continue;
-            }
-            if (subRuleItem.quickTests && subRuleItem.quickTests.length > 0 &&
-                subRuleItem.quickTests.find(qt => qt[1] >= rightPart.length || rightPart[qt[1]] !== qt[0])) {
-                continue;
-            }
 
             const m = rightPart.match(subRuleItem.fromRegExp);
             if (m == null) {
@@ -509,7 +501,7 @@ export class TranslitService {
         const mergedTplVar: { [key: string]: string } = { ...globalTplVar, ...tplVar };
         const varNames = Object.keys(mergedTplVar).sort().reverse();
 
-        const parsedItem: TranslitRuleItemParsed = {
+        const parsedRuleItem: TranslitRuleItemParsed = {
             ...ruleItem,
             index: subRuleIndex == null ? ruleIndex || 0 : subRuleIndex,
             parsedFrom: ruleItem.from,
@@ -520,19 +512,19 @@ export class TranslitService {
 
         for (const varName of varNames) {
             const value = mergedTplVar[varName];
-            if (parsedItem.parsedFrom.includes(varName)) {
-                parsedItem.parsedFrom = parsedItem.parsedFrom.replace(new RegExp(varName, 'g'), value);
+            if (parsedRuleItem.parsedFrom.includes(varName)) {
+                parsedRuleItem.parsedFrom = parsedRuleItem.parsedFrom.replace(new RegExp(varName, 'g'), value);
             }
-            if (parsedItem.parsedTo && parsedItem.parsedTo.includes(varName)) {
-                parsedItem.parsedTo = parsedItem.parsedTo.replace(new RegExp(varName, 'g'), value);
+            if (parsedRuleItem.parsedTo && parsedRuleItem.parsedTo.includes(varName)) {
+                parsedRuleItem.parsedTo = parsedRuleItem.parsedTo.replace(new RegExp(varName, 'g'), value);
             }
-            if (parsedItem.parsedLeft && parsedItem.parsedLeft.includes(varName)) {
-                parsedItem.parsedLeft = parsedItem.parsedLeft.replace(new RegExp(varName, 'g'), value);
+            if (parsedRuleItem.parsedLeft && parsedRuleItem.parsedLeft.includes(varName)) {
+                parsedRuleItem.parsedLeft = parsedRuleItem.parsedLeft.replace(new RegExp(varName, 'g'), value);
             }
         }
 
-        const seqParsedItems = this.parseTplSeq(
-            parsedItem,
+        const seqParsedRuleItems = this.parseTplSeq(
+            parsedRuleItem,
             tplSeq,
             tplVar,
             globalTplVar,
@@ -541,32 +533,32 @@ export class TranslitService {
             ruleIndex,
             subRuleIndex);
 
-        if (seqParsedItems) {
-            return seqParsedItems;
+        if (seqParsedRuleItems) {
+            return seqParsedRuleItems;
         } else {
-            parsedItem.fromRegExp = new RegExp(`^${parsedItem.parsedFrom}`);
-            if (parsedItem.parsedLeft) {
-                parsedItem.leftRegExp = new RegExp(`${parsedItem.parsedLeft}$`);
+            parsedRuleItem.fromRegExp = new RegExp(`^${parsedRuleItem.parsedFrom}`);
+            if (parsedRuleItem.parsedLeft) {
+                parsedRuleItem.leftRegExp = new RegExp(`${parsedRuleItem.parsedLeft}$`);
             }
 
             let postRules: TranslitSubRuleItem[] | undefined;
-            if (parsedItem.postRulesRef &&
+            if (parsedRuleItem.postRulesRef &&
                 postRulesDef &&
-                postRulesDef[parsedItem.postRulesRef] &&
-                postRulesDef[parsedItem.postRulesRef].length > 0) {
-                postRules = JSON.parse(JSON.stringify(postRulesDef[parsedItem.postRulesRef])) as TranslitSubRuleItem[];
+                postRulesDef[parsedRuleItem.postRulesRef] &&
+                postRulesDef[parsedRuleItem.postRulesRef].length > 0) {
+                postRules = JSON.parse(JSON.stringify(postRulesDef[parsedRuleItem.postRulesRef])) as TranslitSubRuleItem[];
             }
-            if (parsedItem.postRules) {
+            if (parsedRuleItem.postRules) {
                 postRules = postRules || [];
-                postRules.push(...parsedItem.postRules);
+                postRules.push(...parsedRuleItem.postRules);
             }
 
             if (postRules) {
-                if (parsedItem.postRulesStart) {
-                    this.parsePostRulesStart(postRules, parsedItem.postRulesStart);
+                if (parsedRuleItem.postRulesStart) {
+                    this.parsePostRulesStart(postRules, parsedRuleItem.postRulesStart);
                 }
 
-                parsedItem.parsedPostRules = this.parseSubRuleItems(
+                parsedRuleItem.parsedPostRules = this.parseSubRuleItems(
                     postRules,
                     tplSeq,
                     tplVar,
@@ -576,11 +568,11 @@ export class TranslitService {
                     ruleIndex);
             }
 
-            if (subRuleIndex == null && !parsedItem.quickTests && parsedItem.parsedFrom.length === 1) {
-                parsedItem.quickTests = [[parsedItem.parsedFrom, 0]];
+            if (subRuleIndex == null && parsedRuleItem.quickTest == null && parsedRuleItem.parsedFrom.length === 1) {
+                parsedRuleItem.quickTest = { [parsedRuleItem.parsedFrom]: 0 };
             }
 
-            return [parsedItem];
+            return [parsedRuleItem];
         }
     }
 
@@ -644,27 +636,27 @@ export class TranslitService {
                 const currFromChar = String.fromCodePoint(currFrom);
                 const currToChar = String.fromCodePoint(currTo);
 
-                const clonedRuleItem = JSON.parse(JSON.stringify(parsedRuleItem)) as TranslitRuleItemParsed;
-                const fromReplaced = clonedRuleItem.parsedFrom.replace(tplSeqName, currFromChar);
+                const clonedParsedRuleItem = JSON.parse(JSON.stringify(parsedRuleItem)) as TranslitRuleItemParsed;
+                const fromReplaced = clonedParsedRuleItem.parsedFrom.replace(tplSeqName, currFromChar);
 
                 let postRules: TranslitSubRuleItem[] | undefined;
-                if (clonedRuleItem.postRulesRef &&
+                if (clonedParsedRuleItem.postRulesRef &&
                     postRulesDef &&
-                    postRulesDef[clonedRuleItem.postRulesRef] &&
-                    postRulesDef[clonedRuleItem.postRulesRef].length > 0) {
-                    postRules = JSON.parse(JSON.stringify(postRulesDef[clonedRuleItem.postRulesRef])) as TranslitSubRuleItem[];
+                    postRulesDef[clonedParsedRuleItem.postRulesRef] &&
+                    postRulesDef[clonedParsedRuleItem.postRulesRef].length > 0) {
+                    postRules = JSON.parse(JSON.stringify(postRulesDef[clonedParsedRuleItem.postRulesRef])) as TranslitSubRuleItem[];
                 }
-                if (clonedRuleItem.postRules) {
+                if (clonedParsedRuleItem.postRules) {
                     postRules = postRules || [];
-                    postRules.push(...clonedRuleItem.postRules);
+                    postRules.push(...clonedParsedRuleItem.postRules);
                 }
 
-                if (postRules && clonedRuleItem.postRulesStart) {
-                    this.parsePostRulesStart(postRules, clonedRuleItem.postRulesStart);
+                if (postRules && clonedParsedRuleItem.postRulesStart) {
+                    this.parsePostRulesStart(postRules, clonedParsedRuleItem.postRulesStart);
                 }
 
-                const parsedItem: TranslitRuleItemParsed = {
-                    ...clonedRuleItem,
+                const parsedSeqRuleItem: TranslitRuleItemParsed = {
+                    ...clonedParsedRuleItem,
                     index: subRuleIndex == null ? ruleIndex || 0 : subRuleIndex,
                     seqIndex: seqIndex,
                     tplSeqName,
@@ -672,16 +664,16 @@ export class TranslitService {
                     totalSeqCount,
                     parsedFrom: fromReplaced,
                     fromRegExp: new RegExp(`^${fromReplaced}`),
-                    parsedTo: (clonedRuleItem.parsedTo as string).replace(tplSeqName, currToChar),
+                    parsedTo: (clonedParsedRuleItem.parsedTo as string).replace(tplSeqName, currToChar),
                     parsedPostRules: postRules ? this.parseSubRuleItems(
                         postRules, tplSeq, tplVar, globalTplVar, postRulesDef, phaseIndex, ruleIndex) : undefined
                 };
 
                 seqIndex++;
 
-                this.parseQuickTestsForSeq(parsedItem, tplSeqName, currFromChar, firstSeq);
+                this.parseQuickTestForSeq(parsedSeqRuleItem, tplSeqName, currFromChar, firstSeq);
 
-                parsedRuleItems.push(parsedItem);
+                parsedRuleItems.push(parsedSeqRuleItem);
 
                 firstSeq = false;
             }
@@ -692,21 +684,35 @@ export class TranslitService {
         return parsedRuleItems;
     }
 
-    private parseQuickTestsForSeq(parsedRuleItem: TranslitRuleItemParsed, name: string, value: string, firstSeq: boolean): void {
-        if (!parsedRuleItem.quickTests) {
+    private parseQuickTestForSeq(
+        parsedRuleItem: TranslitRuleItemParsed,
+        tplSeqName: string,
+        currFromChar: string,
+        firstSeq: boolean): void {
+        if (!parsedRuleItem.quickTest) {
             return;
         }
 
-        for (let i = 0; i < parsedRuleItem.quickTests.length; i++) {
-            const qt = parsedRuleItem.quickTests[i];
-            if (qt[0] === name) {
-                qt[0] = value;
-                parsedRuleItem.quickTests[i] = qt;
-            } else if (firstSeq) {
-                parsedRuleItem.seqQuickTests = parsedRuleItem.seqQuickTests || [];
-                parsedRuleItem.seqQuickTests.push([qt[0], qt[1]]);
+        const quickTest = parsedRuleItem.quickTest;
+        const newQuickTest: { [key: string]: number } = {};
+
+        Object.keys(quickTest).forEach(key => {
+            let newKey = key;
+            if (key === tplSeqName) {
+                newKey = currFromChar;
+                newQuickTest[newKey] = quickTest[key];
+            } else {
+                newQuickTest[newKey] = quickTest[key];
+
+                if (firstSeq) {
+                    parsedRuleItem.seqQuickTests = parsedRuleItem.seqQuickTests || [];
+                    parsedRuleItem.seqQuickTests.push([newKey, newQuickTest[newKey]]);
+                }
             }
-        }
+
+        });
+
+        parsedRuleItem.quickTest = newQuickTest;
     }
 
     private parsePostRulesStart(postRules: TranslitSubRuleItem[], postRulesStart: { [orGroup: string]: number }): void {
@@ -740,7 +746,8 @@ export class TranslitService {
                     globalTplVar,
                     postRulesDef,
                     phaseIndex,
-                    ruleIndex, i) as TranslitSubRuleItemParsed[];
+                    ruleIndex,
+                    i) as TranslitSubRuleItemParsed[];
             parsedSubRuleItems.push(...parsedItems);
         }
 

@@ -17,7 +17,6 @@ export interface TranslitSubRuleItemParsed extends TranslitSubRuleItem {
     firstSeq?: boolean;
     totalSeqCount?: number;
     seqIndex?: number;
-    seqQuickTests?: [string, number][];
 }
 
 export interface TranslitRuleItemParsed extends TranslitRuleItem {

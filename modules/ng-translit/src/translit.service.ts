@@ -544,7 +544,7 @@ export class TranslitService {
         if (seqParsedItems) {
             return seqParsedItems;
         } else {
-            parsedItem.fromRegExp = subRuleIndex == null ? new RegExp(`^${parsedItem.parsedFrom}`) : new RegExp(`${parsedItem.parsedFrom}`);
+            parsedItem.fromRegExp = new RegExp(`^${parsedItem.parsedFrom}`);
             if (parsedItem.parsedLeft) {
                 parsedItem.leftRegExp = new RegExp(`${parsedItem.parsedLeft}$`);
             }
@@ -671,7 +671,7 @@ export class TranslitService {
                     firstSeq,
                     totalSeqCount,
                     parsedFrom: fromReplaced,
-                    fromRegExp: subRuleIndex == null ? new RegExp(`^${fromReplaced}`) : new RegExp(`${fromReplaced}`),
+                    fromRegExp: new RegExp(`^${fromReplaced}`),
                     parsedTo: (clonedRuleItem.parsedTo as string).replace(tplSeqName, currToChar),
                     parsedPostRules: postRules ? this.parseSubRuleItems(
                         postRules, tplSeq, tplVar, globalTplVar, postRulesDef, phaseIndex, ruleIndex) : undefined

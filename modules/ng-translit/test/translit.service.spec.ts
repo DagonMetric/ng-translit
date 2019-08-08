@@ -907,7 +907,8 @@ describe('TranslitService#translit', () => {
                     postRules: [
                         {
                             from: '\u103B',
-                            to: '\u103A'
+                            to: '\u103A',
+                            start: 2
                         }
                     ]
                 }
@@ -941,7 +942,8 @@ describe('TranslitService#translit', () => {
                     postRules: [
                         {
                             from: '\u1039\u1007',
-                            to: '\u1068'
+                            to: '\u1068',
+                            start: 3
                         }
                     ]
                 }
@@ -1049,6 +1051,7 @@ describe('TranslitService#translit', () => {
                             description: 'Should match',
                             from: '([#c2])\u1039#s2',
                             to: '$1#s2',
+                            start: 2,
                             when: {
                                 flag2: true
                             }
@@ -1185,7 +1188,8 @@ describe('TranslitService#translit', () => {
                 prs1: [
                     {
                         from: '\u103B',
-                        to: '\u103A'
+                        to: '\u103A',
+                        start: 2
                     }
                 ]
             },
@@ -1234,7 +1238,7 @@ describe('TranslitService#translit', () => {
                     from: '([\u1000-\u1021])([\u1000-\u1021])\u103D\u1031',
                     to: '$1\u1031$2\u103C',
                     postRulesRef: 'prs1',
-                    postRulesStart: { a: 0}
+                    postRulesStart: { a: 2 }
                 }
             ]
         }];

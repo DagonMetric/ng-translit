@@ -69,9 +69,9 @@ export interface TranslitRuleItem {
      */
     minLength?: number;
     /**
-     * The key value pairs of character string and its index for quick checking.
+     * Array of [char, index] for quick checking.
      */
-    quickTest?: { [key: string]: number };
+    quickTests?: [string, number][];
     /**
      * Regular expression pattern for checking previous left part string.
      */

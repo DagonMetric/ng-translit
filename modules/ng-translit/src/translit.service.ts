@@ -243,11 +243,9 @@ export class TranslitService {
                     continue;
                 }
 
-                if (ruleItem.quickTest) {
-                    const quickTest = ruleItem.quickTest;
-                    if (Object.keys(quickTest).find(key => quickTest[key] >= curStr.length || curStr[quickTest[key]] !== key)) {
-                        continue;
-                    }
+                if (ruleItem.quickTests && ruleItem.quickTests.length > 0 &&
+                    ruleItem.quickTests.find(qt => qt[1] >= curStr.length || curStr[qt[1]] !== qt[0])) {
+                    continue;
                 }
 
                 if (ruleItem.leftRegExp != null) {
@@ -568,8 +566,8 @@ export class TranslitService {
                     ruleIndex);
             }
 
-            if (subRuleIndex == null && parsedRuleItem.quickTest == null && parsedRuleItem.parsedFrom.length === 1) {
-                parsedRuleItem.quickTest = { [parsedRuleItem.parsedFrom]: 0 };
+            if (subRuleIndex == null && !parsedRuleItem.quickTests && parsedRuleItem.parsedFrom.length === 1) {
+                parsedRuleItem.quickTests = [[parsedRuleItem.parsedFrom, 0]];
             }
 
             return [parsedRuleItem];
@@ -671,7 +669,7 @@ export class TranslitService {
 
                 seqIndex++;
 
-                this.parseQuickTestForSeq(parsedSeqRuleItem, tplSeqName, currFromChar, firstSeq);
+                this.parseQuickTestsForSeq(parsedSeqRuleItem, tplSeqName, currFromChar, firstSeq);
 
                 parsedRuleItems.push(parsedSeqRuleItem);
 
@@ -684,35 +682,25 @@ export class TranslitService {
         return parsedRuleItems;
     }
 
-    private parseQuickTestForSeq(
+    private parseQuickTestsForSeq(
         parsedRuleItem: TranslitRuleItemParsed,
         tplSeqName: string,
         currFromChar: string,
         firstSeq: boolean): void {
-        if (!parsedRuleItem.quickTest) {
+        if (!parsedRuleItem.quickTests) {
             return;
         }
 
-        const quickTest = parsedRuleItem.quickTest;
-        const newQuickTest: { [key: string]: number } = {};
-
-        Object.keys(quickTest).forEach(key => {
-            let newKey = key;
-            if (key === tplSeqName) {
-                newKey = currFromChar;
-                newQuickTest[newKey] = quickTest[key];
-            } else {
-                newQuickTest[newKey] = quickTest[key];
-
-                if (firstSeq) {
-                    parsedRuleItem.seqQuickTests = parsedRuleItem.seqQuickTests || [];
-                    parsedRuleItem.seqQuickTests.push([newKey, newQuickTest[newKey]]);
-                }
+        for (let i = 0; i < parsedRuleItem.quickTests.length; i++) {
+            const qt = parsedRuleItem.quickTests[i];
+            if (qt[0] === tplSeqName) {
+                qt[0] = currFromChar;
+                parsedRuleItem.quickTests[i] = qt;
+            } else if (firstSeq) {
+                parsedRuleItem.seqQuickTests = parsedRuleItem.seqQuickTests || [];
+                parsedRuleItem.seqQuickTests.push([qt[0], qt[1]]);
             }
-
-        });
-
-        parsedRuleItem.quickTest = newQuickTest;
+        }
     }
 
     private parsePostRulesStart(postRules: TranslitSubRuleItem[], postRulesStart: { [orGroup: string]: number }): void {

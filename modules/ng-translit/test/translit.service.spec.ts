@@ -842,12 +842,12 @@ describe('TranslitService#translit', () => {
             rules: [{
                 from: '\u1084(\u1000)\u1060',
                 to: '$1',
-                quickTest: { '\u1060': 1 }
+                quickTests: [['\u1060', 1]]
             },
             {
                 from: '\u1084(\u1000)\u1060',
                 to: '$1\u1039$1\u103C',
-                quickTest: { '\u1060': 2 }
+                quickTests: [['\u1060', 2]]
             }]
         }];
 
@@ -874,12 +874,12 @@ describe('TranslitService#translit', () => {
             rules: [{
                 from: '([\u1006\u1010\u1011])\u1039#s1',
                 to: '$1#s1',
-                quickTest: { '\u1039': 1, '#s1': 2 }
+                quickTests: [['\u1039', 1], ['#s1', 2]]
             },
             {
                 from: '\u1039#s1',
                 to: '#s1',
-                quickTest: { '\u1039': 0 }
+                quickTests: [['\u1039', 0]]
             }
             ]
         }];

@@ -544,6 +544,11 @@ export class TranslitService {
         if (seqParsedItems) {
             return seqParsedItems;
         } else {
+            parsedItem.fromRegExp = subRuleIndex == null ? new RegExp(`^${parsedItem.parsedFrom}`) : new RegExp(`${parsedItem.parsedFrom}`);
+            if (parsedItem.parsedLeft) {
+                parsedItem.leftRegExp = new RegExp(`${parsedItem.parsedLeft}$`);
+            }
+
             let postRules: TranslitSubRuleItem[] | undefined;
             if (parsedItem.postRulesRef &&
                 postRulesDef &&
@@ -556,11 +561,11 @@ export class TranslitService {
                 postRules.push(...parsedItem.postRules);
             }
 
-            parsedItem.fromRegExp = subRuleIndex == null ? new RegExp(`^${parsedItem.parsedFrom}`) : new RegExp(`${parsedItem.parsedFrom}`);
-            if (parsedItem.parsedLeft) {
-                parsedItem.leftRegExp = new RegExp(`${parsedItem.parsedLeft}$`);
-            }
             if (postRules) {
+                if (parsedItem.postRulesStart) {
+                    this.parsePostRulesStart(postRules, parsedItem.postRulesStart);
+                }
+
                 parsedItem.parsedPostRules = this.parseSubRuleItems(
                     postRules,
                     tplSeq,
@@ -654,6 +659,10 @@ export class TranslitService {
                     postRules.push(...clonedRuleItem.postRules);
                 }
 
+                if (postRules && clonedRuleItem.postRulesStart) {
+                    this.parsePostRulesStart(postRules, clonedRuleItem.postRulesStart);
+                }
+
                 const parsedItem: TranslitRuleItemParsed = {
                     ...clonedRuleItem,
                     index: subRuleIndex == null ? ruleIndex || 0 : subRuleIndex,
@@ -696,6 +705,17 @@ export class TranslitService {
             } else if (firstSeq) {
                 parsedRuleItem.seqQuickTests = parsedRuleItem.seqQuickTests || [];
                 parsedRuleItem.seqQuickTests.push([qt[0], qt[1]]);
+            }
+        }
+    }
+
+    private parsePostRulesStart(postRules: TranslitSubRuleItem[], postRulesStart: { [orGroup: string]: number }): void {
+        const keys = Object.keys(postRulesStart);
+        for (const key of keys) {
+            for (const postRule of postRules) {
+                if (postRule.orGroup === key) {
+                    postRule.start = postRulesStart[key];
+                }
             }
         }
     }

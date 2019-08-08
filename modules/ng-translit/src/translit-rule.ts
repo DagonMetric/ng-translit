@@ -90,6 +90,10 @@ export interface TranslitRuleItem {
      */
     postRules?: TranslitSubRuleItem[];
     /**
+     * The `orGroup` and `start` index for `postRules` items.
+     */
+    postRulesStart?: { [orGroup: string]: number };
+    /**
      * The name defined in `postRulesDef`.
      */
     postRulesRef?: string;

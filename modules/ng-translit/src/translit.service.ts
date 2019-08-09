@@ -334,6 +334,9 @@ export class TranslitService {
             const subRuleItem = subRuleItems[i];
 
             if (subRuleItem.orGroup && orGroupNames.includes(subRuleItem.orGroup)) {
+                if (subRuleItem.firstSeq && subRuleItem.totalSeqCount) {
+                    i += subRuleItem.totalSeqCount - 1;
+                }
                 continue;
             }
 

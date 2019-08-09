@@ -796,9 +796,6 @@ describe('TranslitService#translit', () => {
         const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
 
         const testRules: TranslitRulePhase[] = [{
-            tplVar: {
-                '#c': '\u1000-\u1005'
-            },
             rules: [
                 {
                     from: '\u103D',
@@ -808,7 +805,7 @@ describe('TranslitService#translit', () => {
                     description: 'skip',
                     from: '([\u1000-\u1021])\u1037',
                     to: '$1\u1037',
-                    left: '[#c]'
+                    left: '[\u1000-\u1005]'
                 },
                 {
                     from: '\u1037',
@@ -825,6 +822,47 @@ describe('TranslitService#translit', () => {
             { flag1: true, flag2: true },
             true).subscribe(result => {
                 expect(result.outputText).toBe('\u1006\u103c\u1095', result);
+                done();
+            });
+    });
+
+    it("should work with 'left' with 'tplSeq'", (done: DoneFn) => {
+        TestBed.configureTestingModule({
+            providers: [
+                TranslitService
+            ]
+        });
+
+        const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
+
+        const testRules: TranslitRulePhase[] = [{
+            tplVar: {
+                '#c': '\u1000-\u1001'
+            },
+            tplSeq: {
+                '#px': [
+                    ['\u1000', '\u1060', 1],
+                    ['\u1001', '\u1061', 1]
+                ]
+            },
+            rules: [
+                {
+                    description: 'Not match',
+                    from: '\u1039#px',
+                    to: '\u1039#px',
+                    left: '\u1005'
+                },
+                {
+                    from: '\u1039#px',
+                    to: '#px',
+                    left: '[#c]'
+                }
+            ]
+        }];
+
+        translitService.translit('\u1000\u1039\u1000', 'rule1', testRules)
+            .subscribe(result => {
+                expect(result.outputText).toBe('\u1000\u1060', result);
                 done();
             });
     });
@@ -858,7 +896,7 @@ describe('TranslitService#translit', () => {
             });
     });
 
-    it("should work with 'quickTests' and 'tplSeq'", (done: DoneFn) => {
+    it("should work with 'quickTests' with 'tplSeq'", (done: DoneFn) => {
         TestBed.configureTestingModule({
             providers: [
                 TranslitService
@@ -871,16 +909,18 @@ describe('TranslitService#translit', () => {
             tplSeq: {
                 '#s1': [['\u1006', '\u1066', 1], ['\u1010', '\u1071', 1], ['\u1011', '\u1073', 1]]
             },
-            rules: [{
-                from: '([\u1006\u1010\u1011])\u1039#s1',
-                to: '$1#s1',
-                quickTests: [['\u1039', 1], ['#s1', 2]]
-            },
-            {
-                from: '\u1039#s1',
-                to: '#s1',
-                quickTests: [['\u1039', 0]]
-            }
+            rules: [
+                {
+                    description: 'Not match',
+                    from: '([\u1006\u1010\u1011])\u1039#s1',
+                    to: '#s1$1',
+                    quickTests: [['\u1039', 0], ['#s1', 2]]
+                },
+                {
+                    from: '([\u1006\u1010\u1011])\u1039#s1',
+                    to: '$1#s1',
+                    quickTests: [['\u1039', 1], ['#s1', 2]]
+                }
             ]
         }];
 
@@ -923,6 +963,45 @@ describe('TranslitService#translit', () => {
             });
     });
 
+    it("should work with 'postRules' and 'orGroup'", (done: DoneFn) => {
+        TestBed.configureTestingModule({
+            providers: [
+                TranslitService
+            ]
+        });
+
+        const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
+
+        const testRules: TranslitRulePhase[] = [{
+            rules: [
+                {
+                    from: '([\u1000-\u1021])\u1039\u1010',
+                    to: '$1\u1071',
+                    postRules: [
+                        {
+                            from: '\u1014',
+                            to: '\u108F',
+                            orGroup: 'A'
+                        },
+                        {
+                            from: '\u1014',
+                            to: '\u1090',
+                            orGroup: 'A'
+                        }
+                    ]
+                }
+            ]
+        }];
+
+        translitService.translit(
+            '\u1014\u1039\u1010',
+            'rule1',
+            testRules).subscribe(result => {
+                expect(result.outputText).toBe('\u108F\u1071', result);
+                done();
+            });
+    });
+
     it("should work with 'postRules' and 'tplVar'", (done: DoneFn) => {
         TestBed.configureTestingModule({
             providers: [
@@ -960,7 +1039,7 @@ describe('TranslitService#translit', () => {
             });
     });
 
-    it("should work with 'postRules', 'tplVar' and 'tplSeq'", (done: DoneFn) => {
+    it("should work with 'postRules', 'tplVar' with 'tplSeq'", (done: DoneFn) => {
         TestBed.configureTestingModule({
             providers: [
                 TranslitService
@@ -1004,7 +1083,7 @@ describe('TranslitService#translit', () => {
             });
     });
 
-    it("should work with 'postRules' and 'when'", (done: DoneFn) => {
+    it("should work with 'postRules' and 'when' with 'tplSeq'", (done: DoneFn) => {
         TestBed.configureTestingModule({
             providers: [
                 TranslitService
@@ -1072,7 +1151,7 @@ describe('TranslitService#translit', () => {
             });
     });
 
-    it("should work with 'postRules', 'start' and 'quickTests'", (done: DoneFn) => {
+    it("should work with 'postRules' -> 'start', 'orGroup' with 'tplSeq'", (done: DoneFn) => {
         TestBed.configureTestingModule({
             providers: [
                 TranslitService
@@ -1097,27 +1176,38 @@ describe('TranslitService#translit', () => {
                     to: '\u1031\u103B$1#s1',
                     postRules: [
                         {
+                            description: 'Should not match',
+                            from: '([#c2])\u1039#s2',
+                            to: '#s2$1',
+                            start: -1
+                        },
+                        {
                             description: 'Should match',
                             from: '([#c2])\u1039#s2',
                             to: '$1#s2',
-                            start: 2
+                            start: 2,
+                            orGroup: 'a'
                         },
                         {
                             description: 'Should not match',
                             from: '([#c2])\u1039#s2',
-                            to: '$1#s2'
+                            to: '#s2',
+                            start: 2,
+                            orGroup: 'a'
                         },
                         {
                             description: 'Should not match',
                             from: '([\u1000-\u1021])\u1039\u1000',
                             to: '$1\u1060',
-                            start: 10
+                            start: 10,
+                            orGroup: 'b'
                         },
                         {
                             description: 'Should not match',
                             from: '([#c2])\u1039#s2',
                             to: '$1#s2',
-                            start: 10
+                            start: 10,
+                            orGroup: 'b'
                         }
                     ]
                 }
@@ -1129,45 +1219,6 @@ describe('TranslitService#translit', () => {
             'rule1',
             testRules).subscribe(result => {
                 expect(result.outputText).toBe('\u1031\u103B\u1000\u1068\u108B', result);
-                done();
-            });
-    });
-
-    it("should work with 'postRules' and 'orGroup'", (done: DoneFn) => {
-        TestBed.configureTestingModule({
-            providers: [
-                TranslitService
-            ]
-        });
-
-        const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
-
-        const testRules: TranslitRulePhase[] = [{
-            rules: [
-                {
-                    from: '([\u1000-\u1021])\u1039\u1010',
-                    to: '$1\u1071',
-                    postRules: [
-                        {
-                            from: '\u1014',
-                            to: '\u108F',
-                            orGroup: 'A'
-                        },
-                        {
-                            from: '\u1014',
-                            to: '\u1090',
-                            orGroup: 'A'
-                        }
-                    ]
-                }
-            ]
-        }];
-
-        translitService.translit(
-            '\u1014\u1039\u1010',
-            'rule1',
-            testRules).subscribe(result => {
-                expect(result.outputText).toBe('\u108F\u1071', result);
                 done();
             });
     });
@@ -1207,7 +1258,7 @@ describe('TranslitService#translit', () => {
             });
     });
 
-    it("should work with 'postRulesDef', 'postRulesRef' and 'postRulesStart'", (done: DoneFn) => {
+    it("should work with 'postRulesDef', 'postRulesRef' and 'postRulesStart' with 'tplSeq'", (done: DoneFn) => {
         TestBed.configureTestingModule({
             providers: [
                 TranslitService
@@ -1217,6 +1268,9 @@ describe('TranslitService#translit', () => {
         const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
 
         const testRules: TranslitRulePhase[] = [{
+            tplSeq: {
+                '#s1': [['\u1000', '\u1060', 1], ['\u1001', '\u1061', 1]]
+            },
             postRulesDef: {
                 prs1: [
                     {
@@ -1237,6 +1291,13 @@ describe('TranslitService#translit', () => {
                     to: '$1\u1031$2\u103C',
                     postRulesRef: 'prs1',
                     postRulesStart: { a: 2 }
+                },
+                {
+                    description: 'Not Match',
+                    from: '([\u1000-\u1021])\u1039#s1',
+                    to: '$1#s1',
+                    postRulesRef: 'prs1',
+                    postRulesStart: { c: 2 }
                 }
             ]
         }];
@@ -1248,7 +1309,7 @@ describe('TranslitService#translit', () => {
             });
     });
 
-    it("should work with 'postRulesDef', 'postRulesRef', 'tplVar' and 'tplSeq'", (done: DoneFn) => {
+    it("should work with 'postRulesDef', 'postRulesRef', 'tplVar' with 'tplSeq'", (done: DoneFn) => {
         TestBed.configureTestingModule({
             providers: [
                 TranslitService

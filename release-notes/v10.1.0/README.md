@@ -1,9 +1,10 @@
 ## Features
 
-* Add support -1 in `postRules` item `start` for skipping
+* Add support -1 in `postRules` item `start` for skipping purpose
 
-## Changes
+## Changes/Fixes
 
+* Fix `leftRegExp` initialization and some logic
 * Some performance improvements
 
 npm package is available on:

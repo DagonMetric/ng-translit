@@ -347,8 +347,8 @@ export class TranslitService {
                 }
             }
 
-            const start = subRuleItem.start != null && subRuleItem.start > -1 ? subRuleItem.start : 0;
-            if (start >= curStr.length) {
+            const start = subRuleItem.start != null ? subRuleItem.start : 0;
+            if (start < 0 || start >= curStr.length) {
                 if (subRuleItem.firstSeq && subRuleItem.totalSeqCount) {
                     i += subRuleItem.totalSeqCount - 1;
                 }

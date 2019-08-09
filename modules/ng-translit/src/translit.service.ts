@@ -237,17 +237,6 @@ export class TranslitService {
                     continue;
                 }
 
-                if (ruleItem.seqQuickTests && ruleItem.totalSeqCount &&
-                    ruleItem.seqQuickTests.find(qt => qt[1] >= curStr.length || curStr[qt[1]] !== qt[0])) {
-                    i += ruleItem.totalSeqCount - 1;
-                    continue;
-                }
-
-                if (ruleItem.quickTests && ruleItem.quickTests.length > 0 &&
-                    ruleItem.quickTests.find(qt => qt[1] >= curStr.length || curStr[qt[1]] !== qt[0])) {
-                    continue;
-                }
-
                 if (ruleItem.leftRegExp != null) {
                     if (outStr.length > 0) {
                         const leftMatch = outStr.match(ruleItem.leftRegExp);
@@ -263,6 +252,17 @@ export class TranslitService {
                         }
                         continue;
                     }
+                }
+
+                if (ruleItem.seqQuickTests && ruleItem.totalSeqCount &&
+                    ruleItem.seqQuickTests.find(qt => qt[1] >= curStr.length || curStr[qt[1]] !== qt[0])) {
+                    i += ruleItem.totalSeqCount - 1;
+                    continue;
+                }
+
+                if (ruleItem.quickTests && ruleItem.quickTests.length > 0 &&
+                    ruleItem.quickTests.find(qt => qt[1] >= curStr.length || curStr[qt[1]] !== qt[0])) {
+                    continue;
                 }
 
                 const m = curStr.match(ruleItem.fromRegExp);
@@ -308,9 +308,7 @@ export class TranslitService {
                 outStr += replacedString;
                 curStr = curStr.substring(matchedString.length);
 
-                if (foundRule) {
-                    break;
-                }
+                break;
             }
 
             if (!foundRule) {
@@ -556,7 +554,7 @@ export class TranslitService {
 
             if (postRules) {
                 if (parsedRuleItem.postRulesStart) {
-                    this.parsePostRulesStart(postRules, parsedRuleItem.postRulesStart);
+                    this.assignPostRulesStarts(postRules, parsedRuleItem.postRulesStart);
                 }
 
                 parsedRuleItem.parsedPostRules = this.parseSubRuleItems(
@@ -577,6 +575,7 @@ export class TranslitService {
         }
     }
 
+    // tslint:disable-next-line: max-func-body-length
     private parseTplSeq(
         parsedRuleItem: TranslitRuleItemParsed | TranslitSubRuleItemParsed,
         tplSeq?: { [key: string]: [string, string, number][] },
@@ -653,7 +652,7 @@ export class TranslitService {
                 }
 
                 if (postRules && clonedParsedRuleItem.postRulesStart) {
-                    this.parsePostRulesStart(postRules, clonedParsedRuleItem.postRulesStart);
+                    this.assignPostRulesStarts(postRules, clonedParsedRuleItem.postRulesStart);
                 }
 
                 const parsedSeqRuleItem: TranslitRuleItemParsed = {
@@ -666,6 +665,7 @@ export class TranslitService {
                     parsedFrom: fromReplaced,
                     fromRegExp: new RegExp(`^${fromReplaced}`),
                     parsedTo: (clonedParsedRuleItem.parsedTo as string).replace(tplSeqName, currToChar),
+                    leftRegExp: clonedParsedRuleItem.parsedLeft ? new RegExp(`${clonedParsedRuleItem.parsedLeft}$`) : undefined,
                     parsedPostRules: postRules ? this.parseSubRuleItems(
                         postRules, tplSeq, tplVar, globalTplVar, postRulesDef, phaseIndex, ruleIndex) : undefined
                 };
@@ -706,7 +706,7 @@ export class TranslitService {
         }
     }
 
-    private parsePostRulesStart(postRules: TranslitSubRuleItem[], postRulesStart: { [orGroup: string]: number }): void {
+    private assignPostRulesStarts(postRules: TranslitSubRuleItem[], postRulesStart: { [orGroup: string]: number }): void {
         const keys = Object.keys(postRulesStart);
         for (const key of keys) {
             for (const postRule of postRules) {

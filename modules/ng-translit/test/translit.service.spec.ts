@@ -623,7 +623,8 @@ describe('TranslitService#translit', () => {
             },
             tplSeq: {
                 '#s1': [['\u1006', '\u1066', 1], ['\u1010', '\u1071', 1], ['\u1011', '\u1073', 1], ['\u1018', '\u107B', 1]],
-                '#s2': [['\u1000', '\u1060', 4], ['\u1011', '\u1074', 7], ['\u1019', '\u107C', 1], ['\u101C', '\u1085', 1]]
+                '#s2': [['\u1000', '\u1060', 4], ['\u1011', '\u1074', 7], ['\u1019', '\u107C', 1], ['\u101C', '\u1085', 1]],
+                '#s3': [['\u1064', '', 1]]
             },
             rules: [
                 {
@@ -634,10 +635,14 @@ describe('TranslitService#translit', () => {
                     from: '([#v2])\u1039#s2',
                     to: '$1#s2'
                 },
+                {
+                    from: '#s3',
+                    to: '#s3'
+                },
             ]
         }];
 
-        translitService.translit('\u1019\u1039\u1019', 'rule1', testRules, undefined, true)
+        translitService.translit('\u1019\u1039\u1019\u1064', 'rule1', testRules, undefined, true)
             .subscribe(result => {
                 expect(result.outputText).toBe('\u1019\u107C', result);
                 done();
@@ -1422,7 +1427,7 @@ describe('TranslitService#translit', () => {
         }];
 
         const invalidTplSeq3: TranslitRulePhase[] = [{
-            description: 'invalid tplSeq - invalid value',
+            description: 'invalid tplSeq - invalid seq from value',
             tplSeq: {
                 '#x': [['\u1000\u1001', '\u1060', 1]]
             },
@@ -1433,9 +1438,9 @@ describe('TranslitService#translit', () => {
         }];
 
         const invalidTplSeq4: TranslitRulePhase[] = [{
-            description: 'invalid tplSeq - invalid value',
+            description: 'invalid tplSeq - invalid seq to value in more than 1 seq',
             tplSeq: {
-                '#x': [['\u1000', '\u1060\u1061', 1]]
+                '#x': [['\u1000', '\u1060\u1061', 2]]
             },
             rules: [{
                 from: '#x',

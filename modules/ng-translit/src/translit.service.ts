@@ -623,18 +623,22 @@ export class TranslitService {
             const toStart = tplSeqPart[1].trim();
             const seqCount = tplSeqPart[2];
 
-            if (!fromStart || fromStart.length !== 1 || !toStart || toStart.length !== 1 || seqCount < 1) {
+            if (!fromStart || fromStart.length !== 1 || seqCount < 1) {
+                throw new Error(invalidTplValueMsg);
+            }
+
+            if (seqCount > 1 && (!toStart || toStart.length !== 1)) {
                 throw new Error(invalidTplValueMsg);
             }
 
             const fromCPStart = fromStart.codePointAt(0) as number;
-            const toCPStart = toStart.codePointAt(0) as number;
+            const toCPStart = toStart && toStart.length === 1 ? toStart.codePointAt(0) : undefined;
 
             for (let i = 0; i < seqCount; i++) {
-                const currFrom = fromCPStart + i;
-                const currTo = toCPStart + i;
-                const currFromChar = String.fromCodePoint(currFrom);
-                const currToChar = String.fromCodePoint(currTo);
+                const currFromCP = fromCPStart + i;
+                const currToCP = toCPStart ? toCPStart + i : undefined;
+                const currFromChar = String.fromCodePoint(currFromCP);
+                const currToChar = currToCP ? String.fromCodePoint(currToCP) : toStart;
 
                 const clonedParsedRuleItem = JSON.parse(JSON.stringify(parsedRuleItem)) as TranslitRuleItemParsed;
                 const fromReplaced = clonedParsedRuleItem.parsedFrom.replace(tplSeqName, currFromChar);

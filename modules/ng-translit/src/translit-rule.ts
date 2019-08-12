@@ -9,6 +9,20 @@
 // tslint:disable: no-reserved-keywords
 
 /**
+ * Template variables definition.
+ */
+export interface TplVar {
+    [key: string]: string;
+}
+
+/**
+ * The 'when' options to apply only if it equals with user input options.
+ */
+export interface WhenOptions {
+    [option: string]: boolean | string;
+}
+
+/**
  * Transliterate sub-rule item.
  * @additionalProperties false
  */
@@ -28,13 +42,13 @@ export interface TranslitSubRuleItem {
     to: string;
     /**
      * Start index for searching.
-     * @minimum 0
+     * @minimum -1
      */
     start?: number;
     /**
      * Apply the rule only if 'when' options and user options are met.
      */
-    when?: { [option: string]: boolean | string };
+    when?: WhenOptions;
     /**
      * Group code for grouping 'OR' items.
      */
@@ -79,7 +93,7 @@ export interface TranslitRuleItem {
     /**
      * Apply the rule only if 'when' options and user options are met.
      */
-    when?: { [option: string]: boolean | string };
+    when?: WhenOptions;
     /**
      * Sub-rule items to be processed after replaced.
      * @minItems 1
@@ -112,7 +126,7 @@ export interface TranslitRulePhase {
     /**
      * Phase level template variables definition.
      */
-    tplVar?: { [key: string]: string };
+    tplVar?: TplVar;
     /**
      * Template loop/sequence variables definition.
      */
@@ -124,7 +138,7 @@ export interface TranslitRulePhase {
     /**
      * Apply the phase only if 'when' options and user options are met.
      */
-    when?: { [option: string]: boolean | string };
+    when?: WhenOptions;
 }
 
 /**
@@ -147,7 +161,7 @@ export interface TranslitRule {
     /**
      * Global template variables definition.
      */
-    tplVar?: { [key: string]: string };
+    tplVar?: TplVar;
     /**
      * Transliterate rule phases.
      * @minItems 1

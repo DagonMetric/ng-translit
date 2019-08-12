@@ -508,6 +508,47 @@ describe('TranslitService#translit', () => {
             });
     });
 
+    it("should work with phase level 'when' options", (done: DoneFn) => {
+        TestBed.configureTestingModule({
+            providers: [
+                TranslitService
+            ]
+        });
+
+        const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
+
+        const testRules: TranslitRulePhase[] = [
+            {
+                when: {
+                    flag1: true
+                },
+                rules: [
+                    {
+                        from: '\u1040',
+                        to: '\u1041'
+                    }
+                ]
+            },
+            {
+                when: {
+                    fixZero: true
+                },
+                rules: [
+                    {
+                        from: '\u1040',
+                        to: '\u101D'
+                    }
+                ]
+            }
+        ];
+
+        translitService.translit('\u1040', 'rule1', testRules, { fixZero: true })
+            .subscribe(result => {
+                expect(result.outputText).toBe('\u101D', result);
+                done();
+            });
+    });
+
     it("should work with global 'tplVar' rule options", (done: DoneFn) => {
         TestBed.configureTestingModule({
             providers: [

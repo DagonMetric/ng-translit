@@ -121,6 +121,10 @@ export interface TranslitRulePhase {
      * Post rules definitions to be used for `postRulesRef`.
      */
     postRulesDef?: { [key: string]: TranslitSubRuleItem[] };
+    /**
+     * Apply the phase only if 'when' options and user options are met.
+     */
+    when?: { [option: string]: boolean | string };
 }
 
 /**

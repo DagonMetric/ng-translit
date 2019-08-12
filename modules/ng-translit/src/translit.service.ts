@@ -186,7 +186,14 @@ export class TranslitService {
 
         translitResult.traces = trace ? [] : undefined;
         for (const rulePhase of rule.phases) {
-            const outputText = this.applyRulePhase(translitResult.outputText, rulePhase, userOptions, translitResult.traces);
+            if (rulePhase.when) {
+                const whenOptions = rulePhase.when;
+                if (Object.keys(whenOptions).find(k => !userOptions || (whenOptions[k] !== userOptions[k]))) {
+                    continue;
+                }
+            }
+
+            const outputText = this.applyRuleItems(translitResult.outputText, rulePhase, userOptions, translitResult.traces);
             if (!translitResult.replaced) {
                 translitResult.replaced = outputText !== translitResult.outputText;
             }
@@ -200,7 +207,7 @@ export class TranslitService {
     }
 
     // tslint:disable-next-line: max-func-body-length
-    private applyRulePhase(
+    private applyRuleItems(
         inputStr: string,
         rulePhase: TranslitRulePhaseParsed,
         userOptions?: { [option: string]: boolean | string },

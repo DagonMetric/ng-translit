@@ -179,7 +179,7 @@ export class TranslitService {
         rule: TranslitRuleParsed,
         userOptions?: { [option: string]: boolean | string },
         trace?: boolean): TranslitResult {
-        const startTime = Date.now();
+        const startTime = +new Date();
         const translitResult: TranslitResult = {
             outputText: inputStr
         };
@@ -199,9 +199,13 @@ export class TranslitService {
             }
 
             translitResult.outputText = outputText;
+
+            if (!outputText.length) {
+                break;
+            }
         }
 
-        translitResult.duration = Date.now() - startTime;
+        translitResult.duration = Math.max(+new Date() - startTime, 0);
 
         return translitResult;
     }
@@ -223,13 +227,8 @@ export class TranslitService {
             for (let i = 0; i < rulePhase.rules.length; i++) {
                 const ruleItem = rulePhase.rules[i];
 
-                if (lastRevisitIndex != null) {
-                    if (i === lastRevisitIndex) {
-                        lastRevisitIndex = undefined;
-                        continue;
-                    }
-
-                    lastRevisitIndex = undefined;
+                if (i === lastRevisitIndex) {
+                    continue;
                 }
 
                 if (ruleItem.when && (!ruleItem.tplSeqName || ruleItem.firstSeq)) {
@@ -256,6 +255,17 @@ export class TranslitService {
                     continue;
                 }
 
+                if (ruleItem.seqQuickTests && ruleItem.totalSeqCount &&
+                    ruleItem.seqQuickTests.find(qt => qt[1] >= curStr.length || curStr[qt[1]] !== qt[0])) {
+                    i += ruleItem.totalSeqCount - 1;
+                    continue;
+                }
+
+                if (ruleItem.quickTests && ruleItem.quickTests.length > 0 &&
+                    ruleItem.quickTests.find(qt => qt[1] >= curStr.length || curStr[qt[1]] !== qt[0])) {
+                    continue;
+                }
+
                 if (ruleItem.leftRegExp != null) {
                     if (outStr.length > 0) {
                         const leftMatch = outStr.match(ruleItem.leftRegExp);
@@ -271,17 +281,6 @@ export class TranslitService {
                         }
                         continue;
                     }
-                }
-
-                if (ruleItem.seqQuickTests && ruleItem.totalSeqCount &&
-                    ruleItem.seqQuickTests.find(qt => qt[1] >= curStr.length || curStr[qt[1]] !== qt[0])) {
-                    i += ruleItem.totalSeqCount - 1;
-                    continue;
-                }
-
-                if (ruleItem.quickTests && ruleItem.quickTests.length > 0 &&
-                    ruleItem.quickTests.find(qt => qt[1] >= curStr.length || curStr[qt[1]] !== qt[0])) {
-                    continue;
                 }
 
                 const m = curStr.match(ruleItem.fromRegExp);
@@ -307,11 +306,11 @@ export class TranslitService {
                         parsedFrom: ruleItem.parsedFrom,
                         to: ruleItem.to,
                         parsedTo: ruleItem.parsedTo,
+                        left: ruleItem.left,
+                        parsedLeft: ruleItem.parsedLeft,
                         inputString: curStr,
                         matchedString,
-                        replacedString,
-                        left: ruleItem.left,
-                        parsedLeft: ruleItem.parsedLeft
+                        replacedString
                     };
                     traces.push(currentTrace);
                 }
@@ -320,14 +319,12 @@ export class TranslitService {
                     replacedString = this.applySubRuleItems(replacedString, ruleItem.parsedPostRules, userOptions, currentTrace);
                 }
 
-                if (ruleItem.seqIndex != null && ruleItem.totalSeqCount) {
-                    i += ruleItem.totalSeqCount - ruleItem.seqIndex - 1;
-                }
-
                 if (ruleItem.revisit) {
                     curStr = replacedString + curStr.substring(matchedString.length);
                     lastRevisitIndex = i;
                 } else {
+                    lastRevisitIndex = undefined;
+
                     outStr += replacedString;
                     curStr = curStr.substring(matchedString.length);
                 }
@@ -335,7 +332,9 @@ export class TranslitService {
                 break;
             }
 
-            if (!foundRule) {
+            if (!foundRule && curStr.length > 0) {
+                lastRevisitIndex = undefined;
+
                 outStr += curStr[0];
                 curStr = curStr.substring(1);
             }
@@ -409,6 +408,10 @@ export class TranslitService {
             }
 
             curStr = replacedString;
+
+            if (!curStr.length) {
+                break;
+            }
 
             if (subRuleItem.seqIndex != null && subRuleItem.totalSeqCount) {
                 i += subRuleItem.totalSeqCount - subRuleItem.seqIndex - 1;

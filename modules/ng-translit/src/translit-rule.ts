@@ -91,6 +91,10 @@ export interface TranslitRuleItem {
      */
     left?: string;
     /**
+     * Set true for re-checking with other rule items.
+     */
+    revisit?: boolean;
+    /**
      * Apply the rule only if 'when' options and user options are met.
      */
     when?: WhenOptions;

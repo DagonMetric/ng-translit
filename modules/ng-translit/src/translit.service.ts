@@ -215,11 +215,23 @@ export class TranslitService {
         let outStr = '';
         let curStr = inputStr;
 
+        let lastRevisitIndex: number | undefined;
+
         while (curStr.length > 0) {
             let foundRule = false;
 
             for (let i = 0; i < rulePhase.rules.length; i++) {
                 const ruleItem = rulePhase.rules[i];
+
+                if (lastRevisitIndex != null) {
+                    if (i === lastRevisitIndex) {
+                        lastRevisitIndex = undefined;
+                        continue;
+                    }
+
+                    lastRevisitIndex = undefined;
+                }
+
                 if (ruleItem.when && (!ruleItem.tplSeqName || ruleItem.firstSeq)) {
                     const whenOptions = ruleItem.when;
                     if (Object.keys(whenOptions).find(k => !userOptions || (whenOptions[k] !== userOptions[k]))) {
@@ -312,8 +324,13 @@ export class TranslitService {
                     i += ruleItem.totalSeqCount - ruleItem.seqIndex - 1;
                 }
 
-                outStr += replacedString;
-                curStr = curStr.substring(matchedString.length);
+                if (ruleItem.revisit) {
+                    curStr = replacedString + curStr.substring(matchedString.length);
+                    lastRevisitIndex = i;
+                } else {
+                    outStr += replacedString;
+                    curStr = curStr.substring(matchedString.length);
+                }
 
                 break;
             }

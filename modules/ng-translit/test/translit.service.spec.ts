@@ -806,6 +806,35 @@ describe('TranslitService#translit', () => {
             });
     });
 
+    it("should work with 'revisit' rule option", (done: DoneFn) => {
+        TestBed.configureTestingModule({
+            providers: [
+                TranslitService
+            ]
+        });
+
+        const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
+
+        const testRules: TranslitRulePhase[] = [{
+            rules: [{
+                from: '\u101D',
+                to: '\u1040',
+                revisit: true
+            },
+            {
+                from: '\u1040\u1041',
+                to: '\u1041',
+                revisit: true
+            }]
+        }];
+
+        translitService.translit('\u101D\u1041', 'rule1', testRules)
+            .subscribe(result => {
+                expect(result.outputText).toBe('\u1041', result);
+                done();
+            });
+    });
+
     it("should work with match only rule (no 'to' provided)", (done: DoneFn) => {
         TestBed.configureTestingModule({
             providers: [

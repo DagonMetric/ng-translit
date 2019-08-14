@@ -74,18 +74,18 @@ export interface TranslitRuleItem {
      */
     to?: string;
     /**
-     * If true, only match and replace on the start of string.
-     */
-    matchOnStart?: boolean;
-    /**
      * Minimum input string length for quick checking.
      * @minimum 1
      */
     minLength?: number;
     /**
-     * Array of [char, index] for quick checking.
+     * Array of input string [char, index] for quick checking.
      */
     quickTests?: [string, number][];
+    /**
+     * If true, only match and replace when has previous replaced left part string. If falase, only start of string.
+     */
+    hasLeft?: boolean;
     /**
      * Regular expression pattern for checking previous left part string.
      */

@@ -733,7 +733,7 @@ describe('TranslitService#translit', () => {
             });
     });
 
-    it("should work with 'matchOnStart' rule option", (done: DoneFn) => {
+    it("should work with 'hasLeft' rule option", (done: DoneFn) => {
         TestBed.configureTestingModule({
             providers: [
                 TranslitService
@@ -744,25 +744,41 @@ describe('TranslitService#translit', () => {
 
         const testRules: TranslitRulePhase[] = [{
             tplSeq: {
-                '#s1': [['\u1040', '\u0030', 10]],
+                '#s1': [['\u1045', '\u0035', 3]],
             },
-            rules: [{
-                from: '\u1040',
-                to: '\u101D',
-                matchOnStart: true
-            },
-            {
-                from: '\u1040',
-                to: '\u1030',
-                matchOnStart: true
-            }, {
-                from: '#s1',
-                to: '#s1',
-                matchOnStart: true
-            }]
+            rules: [
+                {
+                    description: 'Not match',
+                    from: '#s1',
+                    to: '#s1',
+                    hasLeft: true
+                },
+                {
+                    description: 'Not match',
+                    from: '\u1041',
+                    to: '\u1042',
+                    hasLeft: false
+                },
+                {
+                    description: 'Not match',
+                    from: '\u1042',
+                    to: '\u1043',
+                    hasLeft: true
+                },
+                {
+                    from: '\u1040',
+                    to: '\u101D',
+                    hasLeft: false
+                },
+                {
+                    from: '\u1040\u1040',
+                    to: '\u1040',
+                    hasLeft: true
+                }
+            ]
         }];
 
-        translitService.translit('\u1040\u1040', 'rule1', testRules)
+        translitService.translit('\u1040\u1040\u1040', 'rule1', testRules)
             .subscribe(result => {
                 expect(result.outputText).toEqual('\u101D\u1040', result);
                 done();

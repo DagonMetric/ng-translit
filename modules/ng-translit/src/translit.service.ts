@@ -241,7 +241,8 @@ export class TranslitService {
                     }
                 }
 
-                if (ruleItem.matchOnStart && outStr.length > 0) {
+                if (ruleItem.hasLeft != null &&
+                    ((ruleItem.hasLeft === false && outStr.length > 0) || (ruleItem.hasLeft === true && !outStr.length))) {
                     if (ruleItem.firstSeq && ruleItem.totalSeqCount) {
                         i += ruleItem.totalSeqCount - 1;
                     }

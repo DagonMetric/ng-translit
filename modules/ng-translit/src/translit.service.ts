@@ -199,10 +199,6 @@ export class TranslitService {
             }
 
             translitResult.outputText = outputText;
-
-            if (!outputText.length) {
-                break;
-            }
         }
 
         translitResult.duration = Math.max(+new Date() - startTime, 0);
@@ -409,10 +405,6 @@ export class TranslitService {
             }
 
             curStr = replacedString;
-
-            if (!curStr.length) {
-                break;
-            }
 
             if (subRuleItem.seqIndex != null && subRuleItem.totalSeqCount) {
                 i += subRuleItem.totalSeqCount - subRuleItem.seqIndex - 1;

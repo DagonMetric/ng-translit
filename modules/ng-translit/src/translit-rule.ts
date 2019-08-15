@@ -91,9 +91,10 @@ export interface TranslitRuleItem {
      */
     left?: string;
     /**
-     * Set true for re-checking with other rule items.
+     * Revisit replaced string.
+     * @minimum 1
      */
-    revisit?: boolean;
+    revisit?: number;
     /**
      * Apply the rule only if 'when' options and user options are met.
      */

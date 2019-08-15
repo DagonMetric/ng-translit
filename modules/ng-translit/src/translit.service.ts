@@ -316,9 +316,13 @@ export class TranslitService {
                     replacedString = this.applySubRuleItems(replacedString, ruleItem.parsedPostRules, userOptions, currentTrace);
                 }
 
-                if (ruleItem.revisit) {
-                    curStr = replacedString + curStr.substring(matchedString.length);
-                    lastRevisitIndex = i;
+                if (ruleItem.revisit != null && ruleItem.revisit > 0) {
+                    const revisit = ruleItem.revisit >= replacedString.length ? 0 : replacedString.length - ruleItem.revisit;
+
+                    outStr += replacedString.substring(0, revisit);
+                    curStr = replacedString.substring(revisit) + curStr.substring(matchedString.length);
+
+                    lastRevisitIndex = revisit > 0 ? undefined : i;
                 } else {
                     lastRevisitIndex = undefined;
 

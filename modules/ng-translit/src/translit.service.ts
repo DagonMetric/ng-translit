@@ -386,7 +386,7 @@ export class TranslitService {
                 let matchedString: string;
                 let replacedString: string;
 
-                if (postRulesStrategy === 'whileMatchAnyPos') {
+                if (postRulesStrategy === 'whileMatch') {
                     const m = curStr.match(subRuleItem.fromRegExp);
                     if (m == null) {
                         continue;
@@ -441,7 +441,7 @@ export class TranslitService {
                 }
             }
 
-            if (postRulesStrategy !== 'whileMatchAnyPos') {
+            if (postRulesStrategy !== 'whileMatch') {
                 break;
             }
         } while (hasAnyMatch);
@@ -600,7 +600,7 @@ export class TranslitService {
         if (seqParsedRuleItems) {
             return seqParsedRuleItems;
         } else {
-            parsedRuleItem.fromRegExp = subRuleIndex != null && postRulesStrategy === 'whileMatchAnyPos' ?
+            parsedRuleItem.fromRegExp = subRuleIndex != null && postRulesStrategy === 'whileMatch' ?
                 new RegExp(`${parsedRuleItem.parsedFrom}`) : new RegExp(`^${parsedRuleItem.parsedFrom}`);
             if (parsedRuleItem.parsedLeft) {
                 parsedRuleItem.leftRegExp = new RegExp(`${parsedRuleItem.parsedLeft}$`);
@@ -735,7 +735,7 @@ export class TranslitService {
                     firstSeq,
                     totalSeqCount,
                     parsedFrom: fromReplaced,
-                    fromRegExp: subRuleIndex != null && postRulesStrategy === 'whileMatchAnyPos' ?
+                    fromRegExp: subRuleIndex != null && postRulesStrategy === 'whileMatch' ?
                         new RegExp(`${fromReplaced}`) : new RegExp(`^${fromReplaced}`),
                     parsedTo: (clonedParsedRuleItem.parsedTo as string).replace(tplSeqName, currToChar),
                     leftRegExp: clonedParsedRuleItem.parsedLeft ? new RegExp(`${clonedParsedRuleItem.parsedLeft}$`) : undefined,

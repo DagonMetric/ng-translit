@@ -1447,7 +1447,7 @@ describe('TranslitService#translit', () => {
             });
     });
 
-    it("should work with 'postRulesStrategy' = 'whileMatchAnyPos'", (done: DoneFn) => {
+    it("should work with 'postRulesStrategy' = 'whileMatch'", (done: DoneFn) => {
         TestBed.configureTestingModule({
             providers: [
                 TranslitService
@@ -1507,7 +1507,7 @@ describe('TranslitService#translit', () => {
                     from: '([\u102B-\u1030\u1032\u1036\u1037\u1039\u103A\u103C\u103D]+)',
                     to: '$1',
                     postRulesRef: 'prs1',
-                    postRulesStrategy: 'whileMatchAnyPos'
+                    postRulesStrategy: 'whileMatch'
                 }
             ]
         }];

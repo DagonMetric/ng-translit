@@ -58,7 +58,7 @@ export interface TranslitSubRuleItem {
 /**
  * Post rules looping and matching strategy.
  */
-export type PostRulesStrategy = 'matchStart' | 'whileMatchAnyPos';
+export type PostRulesStrategy = 'startMatch' | 'whileMatch';
 
 /**
  * Transliterate rule item.
@@ -118,7 +118,7 @@ export interface TranslitRuleItem {
      */
     postRulesRef?: string;
     /**
-     * Post rules looping and matching strategy. Default is `matchStart`.
+     * Post rules looping and matching strategy. Default is `startMatch`.
      */
     postRulesStrategy?: PostRulesStrategy;
 }

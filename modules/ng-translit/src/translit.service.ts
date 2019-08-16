@@ -24,7 +24,7 @@ import {
 import { TranslitRuleStore } from './translit-rule-store';
 
 /**
- * The options for 'TranslitService'.
+ * The options for `TranslitService`.
  */
 export interface TranslitOptions {
     /**
@@ -300,11 +300,7 @@ export class TranslitService {
                 if (traces) {
                     currentTrace = {
                         from: ruleItem.from,
-                        parsedFrom: ruleItem.parsedFrom,
                         to: ruleItem.to,
-                        parsedTo: ruleItem.parsedTo,
-                        left: ruleItem.left,
-                        parsedLeft: ruleItem.parsedLeft,
                         inputString: curStr,
                         matchedString,
                         replacedString
@@ -421,9 +417,7 @@ export class TranslitService {
                     currentTrace.postRuleTraces = currentTrace.postRuleTraces || [];
                     currentTrace.postRuleTraces.push({
                         from: subRuleItem.from,
-                        parsedFrom: subRuleItem.parsedFrom,
                         to: subRuleItem.to,
-                        parsedTo: subRuleItem.parsedTo,
                         inputString: curStr,
                         matchedString,
                         replacedString

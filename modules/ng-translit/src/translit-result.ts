@@ -9,25 +9,17 @@
 // tslint:disable: no-reserved-keywords
 
 /**
- * The transliteration trace sub Item.
+ * The transliteration trace post Item.
  */
 export interface TranslitTraceSubItem {
     /**
-     * The 'from' text of rule item.
+     * The `from` text of post rule item.
      */
     from: string;
     /**
-     * The 'from' (parsed) of rule item.
-     */
-    parsedFrom: string;
-    /**
-     * The 'to' text of rule item.
+     * The `to` text of post rule item.
      */
     to?: string;
-    /**
-     * The 'to' (parsed) of rule item.
-     */
-    parsedTo?: string;
     /**
      * The input string.
      */
@@ -47,21 +39,13 @@ export interface TranslitTraceSubItem {
  */
 export interface TranslitTraceItem {
     /**
-     * The 'from' text of rule item.
+     * The `from` text of rule item.
      */
     from: string;
     /**
-     * The 'from' (parsed) of rule item.
-     */
-    parsedFrom: string;
-    /**
-     * The 'to' text of rule item.
+     * The `to` text of rule item.
      */
     to?: string;
-    /**
-     * The 'to' (parsed) of rule item.
-     */
-    parsedTo?: string;
     /**
      * The input string.
      */
@@ -75,15 +59,7 @@ export interface TranslitTraceItem {
      */
     replacedString: string;
     /**
-     * The previous left part string checking.
-     */
-    left?: string;
-    /**
-     * The 'left' (parsed) of rule item.
-     */
-    parsedLeft?: string;
-    /**
-     * Trace information for post rule items.
+     * Array of `postRules` transliterate trace information.
      */
     postRuleTraces?: TranslitTraceSubItem[];
 }
@@ -93,19 +69,19 @@ export interface TranslitTraceItem {
  */
 export interface TranslitResult {
     /**
-     * The converted output text.
+     * The output text.
      */
     outputText: string;
     /**
-     * The value will be 'true' if source text is converted or replaced.
+     * The value will be `true` if source text is converted.
      */
     replaced?: boolean;
     /**
-     * Transliteration duration in miliseconds.
+     * Conversion duration in miliseconds.
      */
     duration?: number;
     /**
-     * Transliteration information for debugging.
+     * Array of transliterate trace information for debugging.
      */
     traces?: TranslitTraceItem[];
 }

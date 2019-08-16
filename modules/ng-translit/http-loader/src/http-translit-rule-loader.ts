@@ -14,7 +14,7 @@ import { Observable } from 'rxjs';
 import { TranslitRuleAny, TranslitRuleLoader } from '@dagonmetric/ng-translit';
 
 /**
- * The options for HttpTranslitRuleLoader.
+ * The options for `HttpTranslitRuleLoader`.
  */
 export interface HttpTranslitRuleLoaderOptions {
     /**
@@ -30,7 +30,7 @@ export interface HttpTranslitRuleLoaderOptions {
 export const HTTP_TRANSLIT_RULE_LOADER_OPTIONS = new InjectionToken<HttpTranslitRuleLoaderOptions>('HttpTranslitRuleLoaderOptions');
 
 /**
- * Implements an HTTP client API for TranslitRuleLoader that relies on the Angular HttpClient.
+ * Implements an HTTP client API for `TranslitRuleLoader` that relies on the Angular `HttpClient`.
  */
 @Injectable()
 export class HttpTranslitRuleLoader implements TranslitRuleLoader {

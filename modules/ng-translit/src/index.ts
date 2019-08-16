@@ -7,7 +7,7 @@
  */
 
  /**
-  * Entry point for all public APIs of the ng-translit package.
+  * Entry point for all public APIs of the `ng-translit` package.
   */
 export * from './translit-result';
 export * from './translit-rule-loader.token';

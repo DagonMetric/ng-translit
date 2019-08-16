@@ -11,7 +11,7 @@ import { ModuleWithProviders, NgModule } from '@angular/core';
 import { TRANSLIT_OPTIONS, TranslitOptions, TranslitService } from './translit.service';
 
 /**
- * The transliteration NGMODULE for providing TranslitService.
+ * The transliteration `NGMODULE` for providing `TranslitService`.
  */
 @NgModule({
     providers: [
@@ -20,8 +20,8 @@ import { TRANSLIT_OPTIONS, TranslitOptions, TranslitService } from './translit.s
 })
 export class TranslitModule {
     /**
-     * Provides options for configuring the TranslitModule.
-     * @param options An object of configuration options of type 'TranslitOptions'.
+     * Provides options for configuring the `TranslitModule`.
+     * @param options An object of configuration options of type `TranslitOptions`.
      */
     static withOptions(options: TranslitOptions): ModuleWithProviders {
         return {

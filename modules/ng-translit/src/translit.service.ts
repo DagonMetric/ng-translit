@@ -12,7 +12,7 @@ import { Observable, Observer, of } from 'rxjs';
 import { map, share, take } from 'rxjs/operators';
 
 import { TranslitResult, TranslitTraceItem } from './translit-result';
-import { TranslitRule, TranslitRuleItem, TranslitRulePhase, TranslitSubRuleItem } from './translit-rule';
+import { PostRulesStrategy, TranslitRule, TranslitRuleItem, TranslitRulePhase, TranslitSubRuleItem } from './translit-rule';
 import { TranslitRuleLoader } from './translit-rule-loader';
 import { TRANSLIT_RULE_LOADER } from './translit-rule-loader.token';
 import {
@@ -313,7 +313,12 @@ export class TranslitService {
                 }
 
                 if (ruleItem.parsedPostRules && ruleItem.parsedTo != null && replacedString.length > 0) {
-                    replacedString = this.applySubRuleItems(replacedString, ruleItem.parsedPostRules, userOptions, currentTrace);
+                    replacedString = this.applySubRuleItems(
+                        replacedString,
+                        ruleItem.parsedPostRules,
+                        ruleItem.postRulesStrategy,
+                        userOptions,
+                        currentTrace);
                 }
 
                 if (ruleItem.revisit != null && ruleItem.revisit > 0) {
@@ -347,73 +352,99 @@ export class TranslitService {
     private applySubRuleItems(
         inputStr: string,
         subRuleItems: TranslitSubRuleItemParsed[],
+        postRulesStrategy?: PostRulesStrategy,
         userOptions?: { [option: string]: boolean | string },
         currentTrace?: TranslitTraceItem): string {
         let curStr = inputStr;
         const orGroupNames: string[] = [];
 
-        for (let i = 0; i < subRuleItems.length; i++) {
-            const subRuleItem = subRuleItems[i];
+        let hasAnyMatch: boolean;
 
-            if (subRuleItem.orGroup && orGroupNames.includes(subRuleItem.orGroup)) {
-                if (subRuleItem.firstSeq && subRuleItem.totalSeqCount) {
-                    i += subRuleItem.totalSeqCount - 1;
-                }
-                continue;
-            }
+        do {
+            hasAnyMatch = false;
 
-            if (subRuleItem.when && (!subRuleItem.tplSeqName || subRuleItem.firstSeq)) {
-                const whenOptions = subRuleItem.when;
-                if (Object.keys(whenOptions).find(k => !userOptions || (whenOptions[k] !== userOptions[k]))) {
+            for (let i = 0; i < subRuleItems.length; i++) {
+                const subRuleItem = subRuleItems[i];
+
+                if (subRuleItem.orGroup && orGroupNames.includes(subRuleItem.orGroup)) {
                     if (subRuleItem.firstSeq && subRuleItem.totalSeqCount) {
                         i += subRuleItem.totalSeqCount - 1;
                     }
                     continue;
                 }
-            }
 
-            const start = subRuleItem.start != null ? subRuleItem.start : 0;
-            if (start < 0 || start >= curStr.length) {
-                if (subRuleItem.firstSeq && subRuleItem.totalSeqCount) {
-                    i += subRuleItem.totalSeqCount - 1;
+                if (subRuleItem.when && (!subRuleItem.tplSeqName || subRuleItem.firstSeq)) {
+                    const whenOptions = subRuleItem.when;
+                    if (Object.keys(whenOptions).find(k => !userOptions || (whenOptions[k] !== userOptions[k]))) {
+                        if (subRuleItem.firstSeq && subRuleItem.totalSeqCount) {
+                            i += subRuleItem.totalSeqCount - 1;
+                        }
+                        continue;
+                    }
                 }
-                continue;
+
+                let matchedString: string;
+                let replacedString: string;
+
+                if (postRulesStrategy === 'whileMatchAnyPos') {
+                    const m = curStr.match(subRuleItem.fromRegExp);
+                    if (m == null) {
+                        continue;
+                    }
+
+                    matchedString = m[0];
+                    replacedString = curStr.replace(subRuleItem.fromRegExp, subRuleItem.parsedTo);
+
+                    hasAnyMatch = true;
+                } else {
+                    const start = subRuleItem.start != null ? subRuleItem.start : 0;
+                    if (start < 0 || start >= curStr.length) {
+                        if (subRuleItem.firstSeq && subRuleItem.totalSeqCount) {
+                            i += subRuleItem.totalSeqCount - 1;
+                        }
+                        continue;
+                    }
+
+                    const leftPart = start > 0 ? curStr.substring(0, start) : '';
+                    const rightPart = start > 0 ? curStr.substring(start) : curStr;
+
+                    const m = rightPart.match(subRuleItem.fromRegExp);
+                    if (m == null) {
+                        continue;
+                    }
+
+                    matchedString = m[0];
+                    replacedString = leftPart + rightPart.replace(subRuleItem.fromRegExp, subRuleItem.parsedTo);
+                }
+
+                if (currentTrace) {
+                    currentTrace.postRuleTraces = currentTrace.postRuleTraces || [];
+                    currentTrace.postRuleTraces.push({
+                        from: subRuleItem.from,
+                        parsedFrom: subRuleItem.parsedFrom,
+                        to: subRuleItem.to,
+                        parsedTo: subRuleItem.parsedTo,
+                        inputString: curStr,
+                        matchedString,
+                        replacedString
+                    });
+                }
+
+                curStr = replacedString;
+
+                if (subRuleItem.orGroup && !orGroupNames.includes(subRuleItem.orGroup)) {
+                    orGroupNames.push(subRuleItem.orGroup);
+                }
+
+                if (subRuleItem.seqIndex != null && subRuleItem.totalSeqCount) {
+                    i += subRuleItem.totalSeqCount - subRuleItem.seqIndex - 1;
+                }
             }
 
-            const leftPart = start > 0 ? curStr.substring(0, start) : '';
-            const rightPart = start > 0 ? curStr.substring(start) : curStr;
-
-            const m = rightPart.match(subRuleItem.fromRegExp);
-            if (m == null) {
-                continue;
+            if (postRulesStrategy !== 'whileMatchAnyPos') {
+                break;
             }
-
-            if (subRuleItem.orGroup && !orGroupNames.includes(subRuleItem.orGroup)) {
-                orGroupNames.push(subRuleItem.orGroup);
-            }
-
-            const matchedString = m[0];
-            const replacedString = leftPart + rightPart.replace(subRuleItem.fromRegExp, subRuleItem.parsedTo);
-
-            if (currentTrace) {
-                currentTrace.postRuleTraces = currentTrace.postRuleTraces || [];
-                currentTrace.postRuleTraces.push({
-                    from: subRuleItem.from,
-                    parsedFrom: subRuleItem.parsedFrom,
-                    to: subRuleItem.to,
-                    parsedTo: subRuleItem.parsedTo,
-                    inputString: curStr,
-                    matchedString,
-                    replacedString
-                });
-            }
-
-            curStr = replacedString;
-
-            if (subRuleItem.seqIndex != null && subRuleItem.totalSeqCount) {
-                i += subRuleItem.totalSeqCount - subRuleItem.seqIndex - 1;
-            }
-        }
+        } while (hasAnyMatch);
 
         return curStr;
     }
@@ -492,7 +523,15 @@ export class TranslitService {
             for (let j = 0; j < rulePhase.rules.length; j++) {
                 const ruleItem = rulePhase.rules[j];
                 const parsedItems =
-                    this.parseTpl(ruleItem, rulePhase.tplSeq, rulePhase.tplVar, globalTplVar, rulePhase.postRulesDef, i, j);
+                    this.parseTpl(
+                        ruleItem,
+                        rulePhase.tplSeq,
+                        rulePhase.tplVar,
+                        globalTplVar,
+                        rulePhase.postRulesDef,
+                        ruleItem.postRulesStrategy,
+                        i,
+                        j);
                 parsedRuleItems.push(...parsedItems);
             }
 
@@ -518,6 +557,7 @@ export class TranslitService {
         tplVar?: { [key: string]: string },
         globalTplVar?: { [key: string]: string },
         postRulesDef?: { [key: string]: TranslitSubRuleItem[] },
+        postRulesStrategy?: PostRulesStrategy,
         phaseIndex?: number,
         ruleIndex?: number,
         subRuleIndex?: number): TranslitRuleItemParsed[] | TranslitSubRuleItemParsed[] {
@@ -552,6 +592,7 @@ export class TranslitService {
             tplVar,
             globalTplVar,
             postRulesDef,
+            postRulesStrategy,
             phaseIndex,
             ruleIndex,
             subRuleIndex);
@@ -559,7 +600,8 @@ export class TranslitService {
         if (seqParsedRuleItems) {
             return seqParsedRuleItems;
         } else {
-            parsedRuleItem.fromRegExp = new RegExp(`^${parsedRuleItem.parsedFrom}`);
+            parsedRuleItem.fromRegExp = subRuleIndex != null && postRulesStrategy === 'whileMatchAnyPos' ?
+                new RegExp(`${parsedRuleItem.parsedFrom}`) : new RegExp(`^${parsedRuleItem.parsedFrom}`);
             if (parsedRuleItem.parsedLeft) {
                 parsedRuleItem.leftRegExp = new RegExp(`${parsedRuleItem.parsedLeft}$`);
             }
@@ -587,6 +629,7 @@ export class TranslitService {
                     tplVar,
                     globalTplVar,
                     postRulesDef,
+                    postRulesStrategy,
                     phaseIndex,
                     ruleIndex);
             }
@@ -606,6 +649,7 @@ export class TranslitService {
         tplVar?: { [key: string]: string },
         globalTplVar?: { [key: string]: string },
         postRulesDef?: { [key: string]: TranslitSubRuleItem[] },
+        postRulesStrategy?: PostRulesStrategy,
         phaseIndex?: number,
         ruleIndex?: number,
         subRuleIndex?: number): TranslitRuleItemParsed[] | TranslitSubRuleItemParsed[] | undefined {
@@ -691,11 +735,12 @@ export class TranslitService {
                     firstSeq,
                     totalSeqCount,
                     parsedFrom: fromReplaced,
-                    fromRegExp: new RegExp(`^${fromReplaced}`),
+                    fromRegExp: subRuleIndex != null && postRulesStrategy === 'whileMatchAnyPos' ?
+                        new RegExp(`${fromReplaced}`) : new RegExp(`^${fromReplaced}`),
                     parsedTo: (clonedParsedRuleItem.parsedTo as string).replace(tplSeqName, currToChar),
                     leftRegExp: clonedParsedRuleItem.parsedLeft ? new RegExp(`${clonedParsedRuleItem.parsedLeft}$`) : undefined,
                     parsedPostRules: postRules ? this.parseSubRuleItems(
-                        postRules, tplSeq, tplVar, globalTplVar, postRulesDef, phaseIndex, ruleIndex) : undefined
+                        postRules, tplSeq, tplVar, globalTplVar, postRulesDef, postRulesStrategy, phaseIndex, ruleIndex) : undefined
                 };
 
                 seqIndex++;
@@ -751,6 +796,7 @@ export class TranslitService {
         tplVar?: { [key: string]: string },
         globalTplVar?: { [key: string]: string },
         postRulesDef?: { [key: string]: TranslitSubRuleItem[] },
+        postRulesStrategy?: PostRulesStrategy,
         phaseIndex?: number,
         ruleIndex?: number): TranslitSubRuleItemParsed[] {
         const parsedSubRuleItems: TranslitSubRuleItemParsed[] = [];
@@ -764,6 +810,7 @@ export class TranslitService {
                     tplVar,
                     globalTplVar,
                     postRulesDef,
+                    postRulesStrategy,
                     phaseIndex,
                     ruleIndex,
                     i) as TranslitSubRuleItemParsed[];

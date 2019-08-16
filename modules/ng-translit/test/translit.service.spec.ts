@@ -1447,6 +1447,80 @@ describe('TranslitService#translit', () => {
             });
     });
 
+    it("should work with 'postRulesStrategy' = 'whileMatchAnyPos'", (done: DoneFn) => {
+        TestBed.configureTestingModule({
+            providers: [
+                TranslitService
+            ]
+        });
+
+        const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
+
+        const testRules: TranslitRulePhase[] = [{
+            tplSeq: {
+                '#2dOr2er': [
+                    ['\u103C', '\u103C', 1],
+                    ['\u103D', '\u103D', 1],
+                    ['\u103A', '\u103A', 1]
+                ],
+                '#3dr': [
+                    ['\u103C', '\u103C', 1],
+                    ['\u103A', '\u103A', 1]
+                ],
+                '#3cr': [
+                    ['\u103A', '\u103A', 1]
+                ],
+            },
+            postRulesDef: {
+                prs1: [
+                    // [ိ  ီ]
+                    {
+                        from: '\u102D#2dOr2er',
+                        to: '#2dOr2er\u102D'
+                    },
+                    {
+                        from: '\u102E#2dOr2er',
+                        to: '#2dOr2er\u102E'
+                    },
+
+                    // 'ှ'
+                    {
+                        from: '\u103D#3dr',
+                        to: '#3dr\u103D'
+                    },
+
+                    // 'ွ'
+                    {
+                        from: '\u103C#3cr',
+                        to: '#3cr\u103C'
+                    },
+
+                    // Not match
+                    {
+                        from: '\u1037\u1039',
+                        to: '\u1039\u1037'
+                    },
+                ]
+            },
+            rules: [
+                {
+                    from: '([\u102B-\u1030\u1032\u1036\u1037\u1039\u103A\u103C\u103D]+)',
+                    to: '$1',
+                    postRulesRef: 'prs1',
+                    postRulesStrategy: 'whileMatchAnyPos'
+                }
+            ]
+        }];
+
+        translitService.translit(
+            '\u1000\u102D\u103D\u103C\u103A',
+            'rule1',
+            testRules).subscribe(result => {
+                expect(result.outputText).toBe('\u1000\u103A\u103C\u103D\u102D', result);
+                done();
+            });
+    });
+
     it("should throw an error message if both 'ruleName' and 'rulesToUse' are not provided", () => {
         TestBed.configureTestingModule({
             providers: [

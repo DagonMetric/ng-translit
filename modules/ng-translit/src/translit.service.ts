@@ -288,13 +288,8 @@ export class TranslitService {
                 foundRule = true;
 
                 const matchedString = m[0];
-                let replacedString: string;
-
-                if (ruleItem.parsedTo != null) {
-                    replacedString = matchedString.replace(ruleItem.fromRegExp, ruleItem.parsedTo);
-                } else {
-                    replacedString = matchedString;
-                }
+                let replacedString = ruleItem.parsedTo != null ?
+                    matchedString.replace(ruleItem.fromRegExp, ruleItem.parsedTo) : matchedString;
 
                 let currentTrace: TranslitTraceItem | undefined;
                 if (traces) {
@@ -308,7 +303,7 @@ export class TranslitService {
                     traces.push(currentTrace);
                 }
 
-                if (ruleItem.parsedPostRules && ruleItem.parsedTo != null && replacedString.length > 0) {
+                if (ruleItem.parsedPostRules && replacedString.length > 0) {
                     replacedString = this.applySubRuleItems(
                         replacedString,
                         ruleItem.parsedPostRules,

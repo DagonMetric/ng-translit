@@ -8,6 +8,7 @@ import { delay } from 'rxjs/operators';
 
 import {
     TRANSLIT_RULE_LOADER,
+    TranslitResult,
     TranslitRule,
     TranslitRuleAny,
     TranslitRuleItem,
@@ -16,6 +17,67 @@ import {
     TranslitService,
     TranslitTraceItem
 } from '../src';
+
+export function formatCodePoints(str?: string): string {
+    if (str == null) {
+        return '';
+    }
+
+    const cpArray: string[] = [];
+    for (const c of str) {
+        const cp = c.codePointAt(0);
+        if (cp != null && /[\u1000-\u109F\uAA60-\uAA7F\uA9E0-\uA9FF]/.test(c)) {
+            cpArray.push(`\\u${cp.toString(16)}`);
+        } else if (/[\b\f\n\r\t\v]/.test(c)) {
+            if (c === '\n') {
+                cpArray.push('\\n');
+            } else if (c === '\r') {
+                cpArray.push('\\r');
+            } else if (c === '\t') {
+                cpArray.push('\\t');
+            } else if (c === '\f') {
+                cpArray.push('\\f');
+            } else if (c === '\v') {
+                cpArray.push('\\v');
+            } else if (c === '\b') {
+                cpArray.push('\\b');
+            }
+        } else {
+            cpArray.push(`${c}`);
+        }
+    }
+
+    return cpArray.join('');
+}
+
+export function toFailOutput(result: TranslitResult): string {
+    // let str = `\n\ninput: ${formatCodePoints(input)}\n`;
+    let str = `output: ${formatCodePoints(result.outputText)}\n\n`;
+
+    if (result.traces) {
+        for (const trace of result.traces) {
+            str += `from: ${formatCodePoints(trace.from)}\n`;
+            str += `to: ${formatCodePoints(trace.to)}\n`;
+            // str += `input: ${formatCodePoints(trace.inputString)}\n`;
+            // str += `matched: ${formatCodePoints(trace.matchedString)}\n`;
+            // str += `replaced: ${formatCodePoints(trace.replacedString)}\n`;
+
+            if (trace.postRuleTraces && trace.postRuleTraces.length > 0) {
+                str += 'post rules:\n';
+                for (const subTrace of trace.postRuleTraces) {
+                    str += `  from: ${formatCodePoints(subTrace.from)}\n`;
+                    str += `  to: ${formatCodePoints(subTrace.to)}\n`;
+                    str += `  input: ${formatCodePoints(subTrace.inputString)}\n`;
+                    // str += `  matched: ${formatCodePoints(subTrace.matchedString)}\n`;
+                    str += `  replaced: ${formatCodePoints(subTrace.replacedString)}\n`;
+                }
+            }
+            str += '\n';
+        }
+    }
+
+    return str;
+}
 
 /**
  * The FakeTranslitRuleLoader.
@@ -544,7 +606,7 @@ describe('TranslitService#translit', () => {
 
         translitService.translit('\u1040', 'rule1', testRules, { fixZero: true })
             .subscribe(result => {
-                expect(result.outputText).toBe('\u101D', result);
+                expect(result.outputText).toBe('\u101D', toFailOutput(result));
                 done();
             });
     });
@@ -576,7 +638,7 @@ describe('TranslitService#translit', () => {
 
         translitService.translit('\u1000\u1039\u1006', 'rule1', testRule)
             .subscribe(result => {
-                expect(result.outputText).toBe('\u1000\u1066', result);
+                expect(result.outputText).toBe('\u1000\u1066', toFailOutput(result));
                 done();
             });
     });
@@ -606,7 +668,7 @@ describe('TranslitService#translit', () => {
 
         translitService.translit('\u1000\u1039\u1006', 'rule1', testRules)
             .subscribe(result => {
-                expect(result.outputText).toBe('\u1000\u1066', result);
+                expect(result.outputText).toBe('\u1000\u1066', toFailOutput(result));
                 done();
             });
     });
@@ -643,7 +705,7 @@ describe('TranslitService#translit', () => {
 
         translitService.translit('\u1000\u1039\u1006', 'rule1', testRule)
             .subscribe(result => {
-                expect(result.outputText).toBe('\u1000\u1066', result);
+                expect(result.outputText).toBe('\u1000\u1066', toFailOutput(result));
                 done();
             });
     });
@@ -685,7 +747,7 @@ describe('TranslitService#translit', () => {
 
         translitService.translit('\u1019\u1039\u1019\u1064', 'rule1', testRules, undefined, true)
             .subscribe(result => {
-                expect(result.outputText).toBe('\u1019\u107C', result);
+                expect(result.outputText).toBe('\u1019\u107C', toFailOutput(result));
                 done();
             });
     });
@@ -728,7 +790,7 @@ describe('TranslitService#translit', () => {
 
         translitService.translit('\u1040', 'rule1', testRules, { flag1: true })
             .subscribe(result => {
-                expect(result.outputText).toBe('\u101D', result);
+                expect(result.outputText).toBe('\u101D', toFailOutput(result));
                 done();
             });
     });
@@ -780,7 +842,7 @@ describe('TranslitService#translit', () => {
 
         translitService.translit('\u1040\u1040\u1040', 'rule1', testRules)
             .subscribe(result => {
-                expect(result.outputText).toEqual('\u101D\u1040', result);
+                expect(result.outputText).toEqual('\u101D\u1040', toFailOutput(result));
                 done();
             });
     });
@@ -817,7 +879,7 @@ describe('TranslitService#translit', () => {
 
         translitService.translit('\u1040\u1040', 'rule1', testRules)
             .subscribe(result => {
-                expect(result.outputText).toBe('\u101D\u1040', result);
+                expect(result.outputText).toBe('\u101D\u1040', toFailOutput(result));
                 done();
             });
     });
@@ -846,7 +908,7 @@ describe('TranslitService#translit', () => {
 
         translitService.translit('\u101D\u101D\u1041', 'rule1', testRules)
             .subscribe(result => {
-                expect(result.outputText).toBe('\u101D\u1041\u1040', result);
+                expect(result.outputText).toBe('\u101D\u1041\u1040', toFailOutput(result));
                 done();
             });
     });
@@ -872,7 +934,7 @@ describe('TranslitService#translit', () => {
 
         translitService.translit('\u1040\u1040\u1040', 'rule1', testRules)
             .subscribe(result => {
-                expect(result.outputText).toBe('\u1040\u1040\u101D', result);
+                expect(result.outputText).toBe('\u1040\u1040\u101D', toFailOutput(result));
                 done();
             });
     });
@@ -912,7 +974,7 @@ describe('TranslitService#translit', () => {
             testRules,
             { flag1: true, flag2: true },
             true).subscribe(result => {
-                expect(result.outputText).toBe('\u1006\u103c\u1095', result);
+                expect(result.outputText).toBe('\u1006\u103c\u1095', toFailOutput(result));
                 done();
             });
     });
@@ -953,7 +1015,7 @@ describe('TranslitService#translit', () => {
 
         translitService.translit('\u1000\u1039\u1000', 'rule1', testRules)
             .subscribe(result => {
-                expect(result.outputText).toBe('\u1000\u1060', result);
+                expect(result.outputText).toBe('\u1000\u1060', toFailOutput(result));
                 done();
             });
     });
@@ -982,7 +1044,7 @@ describe('TranslitService#translit', () => {
 
         translitService.translit('\u1084\u1000\u1060', 'rule1', testRules)
             .subscribe(result => {
-                expect(result.outputText).toBe('\u1000\u1039\u1000\u103C', result);
+                expect(result.outputText).toBe('\u1000\u1039\u1000\u103C', toFailOutput(result));
                 done();
             });
     });
@@ -1017,7 +1079,7 @@ describe('TranslitService#translit', () => {
 
         translitService.translit('\u1010\u1039\u1010', 'rule1', testRules)
             .subscribe(result => {
-                expect(result.outputText).toBe('\u1010\u1071', result);
+                expect(result.outputText).toBe('\u1010\u1071', toFailOutput(result));
                 done();
             });
     });
@@ -1049,7 +1111,7 @@ describe('TranslitService#translit', () => {
 
         translitService.translit('\u1000\u1039\u1000\u103B', 'rule1', testRules)
             .subscribe(result => {
-                expect(result.outputText).toBe('\u1010\u1060\u103A', result);
+                expect(result.outputText).toBe('\u1010\u1060\u103A', toFailOutput(result));
                 done();
             });
     });
@@ -1088,7 +1150,7 @@ describe('TranslitService#translit', () => {
             '\u1014\u1039\u1010',
             'rule1',
             testRules).subscribe(result => {
-                expect(result.outputText).toBe('\u108F\u1071', result);
+                expect(result.outputText).toBe('\u108F\u1071', toFailOutput(result));
                 done();
             });
     });
@@ -1125,7 +1187,7 @@ describe('TranslitService#translit', () => {
             '\u1004\u103A\u1039\u1000\u1039\u1007\u103C\u1031',
             'rule1',
             testRules).subscribe(result => {
-                expect(result.outputText).toBe('\u1031\u103B\u1000\u1068', result);
+                expect(result.outputText).toBe('\u1031\u103B\u1000\u1068', toFailOutput(result));
                 done();
             });
     });
@@ -1169,7 +1231,7 @@ describe('TranslitService#translit', () => {
             '\u1004\u103A\u1039\u1000\u1039\u1007\u103C\u103D\u103E\u1031\u102D',
             'rule1',
             testRules).subscribe(result => {
-                expect(result.outputText).toBe('\u1031\u103B\u1000\u1068\u108B', result);
+                expect(result.outputText).toBe('\u1031\u103B\u1000\u1068\u108B', toFailOutput(result));
                 done();
             });
     });
@@ -1237,7 +1299,7 @@ describe('TranslitService#translit', () => {
             testRules,
             { flag1: true, flag2: true },
             true).subscribe(result => {
-                expect(result.outputText).toBe('\u1031\u103B\u1000\u1068\u108B', result);
+                expect(result.outputText).toBe('\u1031\u103B\u1000\u1068\u108B', toFailOutput(result));
                 done();
             });
     });
@@ -1309,7 +1371,7 @@ describe('TranslitService#translit', () => {
             '\u1004\u103A\u1039\u1000\u1039\u1007\u103C\u103D\u103E\u1031\u102D',
             'rule1',
             testRules).subscribe(result => {
-                expect(result.outputText).toBe('\u1031\u103B\u1000\u1068\u108B', result);
+                expect(result.outputText).toBe('\u1031\u103B\u1000\u1068\u108B', toFailOutput(result));
                 done();
             });
     });
@@ -1344,7 +1406,7 @@ describe('TranslitService#translit', () => {
 
         translitService.translit('\u1000\u1039\u1000\u103B', 'rule1', testRules)
             .subscribe(result => {
-                expect(result.outputText).toBe('\u1010\u1060\u103A', result);
+                expect(result.outputText).toBe('\u1010\u1060\u103A', toFailOutput(result));
                 done();
             });
     });
@@ -1395,7 +1457,7 @@ describe('TranslitService#translit', () => {
 
         translitService.translit('\u101B\u1014\u103D\u1031', 'rule1', testRules)
             .subscribe(result => {
-                expect(result.outputText).toBe('\u101B\u1031\u108F\u103C', result);
+                expect(result.outputText).toBe('\u101B\u1031\u108F\u103C', toFailOutput(result));
                 done();
             });
     });
@@ -1442,7 +1504,7 @@ describe('TranslitService#translit', () => {
             '\u1004\u103A\u1039\u1000\u1039\u1007\u103C\u103D\u103E\u1031\u102D',
             'rule1',
             testRules).subscribe(result => {
-                expect(result.outputText).toBe('\u1031\u103B\u1000\u1068\u108B', result);
+                expect(result.outputText).toBe('\u1031\u103B\u1000\u1068\u108B', toFailOutput(result));
                 done();
             });
     });
@@ -1457,68 +1519,83 @@ describe('TranslitService#translit', () => {
         const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
 
         const testRules: TranslitRulePhase[] = [{
+            tplVar: {
+                '#3ar': '\u1060-\u1063\u1065-\u1069\u106C\u106D\u1070-\u107C\u1085\u1093\u1096',
+                '#3cr': '#3ar\u103A',
+                '#3dr': '#3cr\u103C',
+                '#64And8bTo8dr': '#3dr\u103D',
+                '#2dOr2er': '#64And8bTo8dr\u1064\u108B-\u108D',
+                '#2fOr30r': '#2dOr2er\u102D\u102E',
+                '#32Or36r': '#2fOr30r\u102F\u1030',
+                '#37r': '#32Or36r\u102B\u102C\u1032\u1036',
+                '#r': '#37r'
+            },
             tplSeq: {
-                '#2dOr2er': [
-                    ['\u103C', '\u103C', 1],
-                    ['\u103D', '\u103D', 1],
-                    ['\u103A', '\u103A', 1]
-                ],
-                '#3dr': [
-                    ['\u103C', '\u103C', 1],
-                    ['\u103A', '\u103A', 1]
-                ],
-                '#3cr': [
-                    ['\u103A', '\u103A', 1]
-                ],
+                '#sx': [
+                    ['\u102B', '\u102B', 6],
+                    ['\u1032', '\u1032', 1],
+                    ['\u1036', '\u1036', 1],
+                    ['\u1037', '\u1037', 1],
+                    ['\u1039', '\u1039', 2],
+                    ['\u103C', '\u103C', 2],
+                    ['\u1064', '\u1064', 1],
+                    ['\u108B', '\u108B', 1],
+                    ['\u108C', '\u108C', 1],
+                    ['\u108D', '\u108D', 1]
+                ]
             },
             postRulesDef: {
-                prs1: [
-                    // [ိ  ီ]
+                po: [
                     {
-                        from: '\u102D#2dOr2er',
-                        to: '#2dOr2er\u102D'
+                        from: '(\u1037)([#37r])',
+                        to: '$2$1'
                     },
                     {
-                        from: '\u102E#2dOr2er',
-                        to: '#2dOr2er\u102E'
+                        from: '([\u1032\u1036])([#32Or36r])',
+                        to: '$2$1'
                     },
-
-                    // 'ှ'
                     {
-                        from: '\u103D#3dr',
-                        to: '#3dr\u103D'
+                        from: '([\u102F\u1030])([#2fOr30r])',
+                        to: '$2$1'
                     },
-
-                    // 'ွ'
                     {
-                        from: '\u103C#3cr',
-                        to: '#3cr\u103C'
+                        from: '([\u102D\u102E])([#2dOr2er])',
+                        to: '$2$1'
                     },
-
-                    // Not match
                     {
-                        from: '\u1037\u1039',
-                        to: '\u1039\u1037'
+                        from: '([\u1064\u108B-\u108D])([#64And8bTo8dr])',
+                        to: '$2$1'
                     },
+                    {
+                        from: '(\u103D)([#3dr])',
+                        to: '$2$1'
+                    },
+                    {
+                        from: '(\u103C)([#3cr])',
+                        to: '$2$1'
+                    },
+                    {
+                        from: '(\u103A)([#3ar])',
+                        to: '$2$1'
+                    }
                 ]
             },
             rules: [
                 {
-                    from: '([\u102B-\u1030\u1032\u1036\u1037\u1039\u103A\u103C\u103D]+)',
-                    to: '$1',
-                    postRulesRef: 'prs1',
+                    from: '#sx([#r]+)',
+                    to: '#sx$1',
+                    minLength: 2,
+                    quickTests: [['#sx', 0]],
+                    postRulesRef: 'po',
                     postRulesStrategy: 'whileMatch'
-                }
+                },
             ]
         }];
 
-        translitService.translit(
-            '\u1000\u102D\u103D\u103C\u103A',
-            'rule1',
-            testRules).subscribe(result => {
-                expect(result.outputText).toBe('\u1000\u103A\u103C\u103D\u102D', result);
-                done();
-            });
+        translitService.translit('\u1000\u1036\u102E\u1060\u102F\u103A', 'rule1', testRules, undefined, true).subscribe(result => {
+            expect(result.outputText).toBe('\u1000\u1060\u103A\u102E\u102F\u1036', toFailOutput(result));
+            done();
+        });
     });
 
     it("should throw an error message if both 'ruleName' and 'rulesToUse' are not provided", () => {

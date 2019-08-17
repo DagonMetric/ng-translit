@@ -448,24 +448,30 @@ export class TranslitService {
         const globalVarNames = globalTplVar ? Object.keys(globalTplVar).sort().reverse() : [];
 
         for (const k1 of varNames) {
-            let value = tplVar[k1];
-            if (!value.includes('#')) {
-                continue;
-            }
+            let curValue = tplVar[k1];
+            const changedValues: string[] = [curValue];
 
-            for (const k2 of varNames.filter(k => k !== k1)) {
-                if (value.includes(k2)) {
-                    value = value.replace(new RegExp(k2, 'g'), tplVar[k2]);
+            while (curValue.includes('#')) {
+                for (const k2 of varNames.filter(k => k !== k1)) {
+                    if (curValue.includes(k2)) {
+                        curValue = curValue.replace(new RegExp(k2, 'g'), tplVar[k2]);
+                    }
                 }
-            }
 
-            for (const k2 of globalVarNames) {
-                if (value.includes(k2)) {
-                    value = value.replace(new RegExp(k2, 'g'), (globalTplVar as { [key: string]: string })[k2]);
+                for (const k2 of globalVarNames) {
+                    if (curValue.includes(k2)) {
+                        curValue = curValue.replace(new RegExp(k2, 'g'), (globalTplVar as { [key: string]: string })[k2]);
+                    }
                 }
-            }
 
-            tplVar[k1] = value;
+                tplVar[k1] = curValue;
+
+                if (changedValues.includes(curValue)) {
+                    break;
+                }
+
+                changedValues.push(curValue);
+            }
         }
     }
 

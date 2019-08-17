@@ -345,6 +345,7 @@ export class TranslitService {
         return outStr;
     }
 
+    // tslint:disable-next-line: max-func-body-length
     private applySubRuleItems(
         inputStr: string,
         subRuleItems: TranslitSubRuleItemParsed[],
@@ -353,11 +354,11 @@ export class TranslitService {
         currentTrace?: TranslitTraceItem): string {
         let curStr = inputStr;
         const orGroupNames: string[] = [];
-
-        let hasAnyMatch: boolean;
+        const replacedValues: string[] = [curStr];
+        let exitWhileLoop = false;
 
         do {
-            hasAnyMatch = false;
+            let hasAnyMatch = false;
 
             for (let i = 0; i < subRuleItems.length; i++) {
                 const subRuleItem = subRuleItems[i];
@@ -391,7 +392,12 @@ export class TranslitService {
                     matchedString = m[0];
                     replacedString = curStr.replace(subRuleItem.fromRegExp, subRuleItem.parsedTo);
 
-                    hasAnyMatch = true;
+                    if (replacedValues.includes(replacedString)) {
+                        exitWhileLoop = true;
+                    } else {
+                        hasAnyMatch = true;
+                        replacedValues.push(replacedString);
+                    }
                 } else {
                     const start = subRuleItem.start != null ? subRuleItem.start : 0;
                     if (start < 0 || start >= curStr.length) {
@@ -411,6 +417,10 @@ export class TranslitService {
 
                     matchedString = m[0];
                     replacedString = leftPart + rightPart.replace(subRuleItem.fromRegExp, subRuleItem.parsedTo);
+
+                    if (subRuleItem.seqIndex != null && subRuleItem.totalSeqCount) {
+                        i += subRuleItem.totalSeqCount - subRuleItem.seqIndex - 1;
+                    }
                 }
 
                 if (currentTrace) {
@@ -430,15 +440,16 @@ export class TranslitService {
                     orGroupNames.push(subRuleItem.orGroup);
                 }
 
-                if (subRuleItem.seqIndex != null && subRuleItem.totalSeqCount) {
-                    i += subRuleItem.totalSeqCount - subRuleItem.seqIndex - 1;
+                if (!curStr.length) {
+                    exitWhileLoop = true;
+                    break;
                 }
             }
 
-            if (postRulesStrategy !== 'whileMatch') {
+            if (!hasAnyMatch || exitWhileLoop) {
                 break;
             }
-        } while (hasAnyMatch);
+        } while (postRulesStrategy === 'whileMatch');
 
         return curStr;
     }

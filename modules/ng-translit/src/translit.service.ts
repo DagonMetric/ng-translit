@@ -340,6 +340,11 @@ export class TranslitService {
                 outStr += curStr[0];
                 curStr = curStr.substring(1);
             }
+
+            // Prevent endless loop
+            if (curStr === inputStr) {
+                break;
+            }
         }
 
         return outStr;

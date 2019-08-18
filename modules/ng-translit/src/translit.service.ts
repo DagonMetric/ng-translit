@@ -199,6 +199,10 @@ export class TranslitService {
             }
 
             translitResult.outputText = outputText;
+
+            if (!outputText.length) {
+                break;
+            }
         }
 
         translitResult.duration = Math.max(+new Date() - startTime, 0);

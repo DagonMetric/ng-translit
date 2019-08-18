@@ -330,12 +330,11 @@ export class TranslitService {
         currentTrace?: TranslitTraceItem): string {
         let curStr = inputStr;
         const orGroupNames: string[] = [];
-        const replacedValues: string[] = [curStr];
-        let exitWhileLoop = false;
+        const whileMatches: [number, string][] = [];
+        let hasAnyMatch = false;
 
         do {
-            let hasAnyMatch = false;
-
+            hasAnyMatch = false;
             for (let i = 0; i < subRuleItems.length; i++) {
                 const subRuleItem = subRuleItems[i];
 
@@ -368,11 +367,11 @@ export class TranslitService {
                     matchedString = m[0];
                     replacedString = curStr.replace(subRuleItem.fromRegExp, subRuleItem.parsedTo);
 
-                    if (replacedValues.includes(replacedString)) {
-                        exitWhileLoop = true;
+                    if (whileMatches.find(wm => wm[0] === i && wm[1] === matchedString)) {
+                        continue;
                     } else {
                         hasAnyMatch = true;
-                        replacedValues.push(replacedString);
+                        whileMatches.push([i, matchedString]);
                     }
                 } else {
                     const start = subRuleItem.start != null ? subRuleItem.start : 0;
@@ -399,6 +398,10 @@ export class TranslitService {
                     }
                 }
 
+                if (subRuleItem.orGroup && !orGroupNames.includes(subRuleItem.orGroup)) {
+                    orGroupNames.push(subRuleItem.orGroup);
+                }
+
                 if (currentTrace) {
                     currentTrace.postRuleTraces = currentTrace.postRuleTraces || [];
                     currentTrace.postRuleTraces.push({
@@ -412,20 +415,11 @@ export class TranslitService {
 
                 curStr = replacedString;
 
-                if (subRuleItem.orGroup && !orGroupNames.includes(subRuleItem.orGroup)) {
-                    orGroupNames.push(subRuleItem.orGroup);
-                }
-
                 if (!curStr.length) {
-                    exitWhileLoop = true;
                     break;
                 }
             }
-
-            if (!hasAnyMatch || exitWhileLoop) {
-                break;
-            }
-        } while (postRulesStrategy === 'whileMatch');
+        } while (postRulesStrategy === 'whileMatch' && hasAnyMatch && curStr.length > 0);
 
         return curStr;
     }
@@ -601,7 +595,7 @@ export class TranslitService {
             return seqParsedRuleItems;
         } else {
             parsedRuleItem.fromRegExp = subRuleIndex != null && postRulesStrategy === 'whileMatch' ?
-                new RegExp(`${parsedRuleItem.parsedFrom}`) : new RegExp(`^${parsedRuleItem.parsedFrom}`);
+                new RegExp(`${parsedRuleItem.parsedFrom}`, 'g') : new RegExp(`^${parsedRuleItem.parsedFrom}`);
             if (parsedRuleItem.parsedLeft) {
                 parsedRuleItem.leftRegExp = new RegExp(`${parsedRuleItem.parsedLeft}$`);
             }
@@ -736,7 +730,7 @@ export class TranslitService {
                     totalSeqCount,
                     parsedFrom: fromReplaced,
                     fromRegExp: subRuleIndex != null && postRulesStrategy === 'whileMatch' ?
-                        new RegExp(`${fromReplaced}`) : new RegExp(`^${fromReplaced}`),
+                        new RegExp(`${fromReplaced}`, 'g') : new RegExp(`^${fromReplaced}`),
                     parsedTo: (clonedParsedRuleItem.parsedTo as string).replace(tplSeqName, currToChar),
                     leftRegExp: clonedParsedRuleItem.parsedLeft ? new RegExp(`${clonedParsedRuleItem.parsedLeft}$`) : undefined,
                     parsedPostRules: postRules ? this.parseSubRuleItems(

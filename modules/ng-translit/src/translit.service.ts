@@ -306,15 +306,8 @@ export class TranslitService {
                         currentTrace);
                 }
 
-                if (ruleItem.revisit != null && ruleItem.revisit > 0) {
-                    const revisit = ruleItem.revisit >= replacedString.length ? 0 : replacedString.length - ruleItem.revisit;
-
-                    outStr += replacedString.substring(0, revisit);
-                    curStr = replacedString.substring(revisit) + curStr.substring(matchedString.length);
-                } else {
-                    outStr += replacedString;
-                    curStr = curStr.substring(matchedString.length);
-                }
+                outStr += replacedString;
+                curStr = curStr.substring(matchedString.length);
 
                 break;
             }
@@ -322,12 +315,6 @@ export class TranslitService {
             if (!foundRule && curStr.length > 0) {
                 outStr += curStr[0];
                 curStr = curStr.substring(1);
-            }
-
-            // Prevent endless loop
-            if (curStr === inputStr) {
-                outStr = inputStr;
-                break;
             }
         }
 

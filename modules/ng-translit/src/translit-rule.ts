@@ -96,11 +96,6 @@ export interface TranslitRuleItem {
      */
     left?: string;
     /**
-     * Revisit replaced string.
-     * @minimum 1
-     */
-    revisit?: number;
-    /**
      * Apply the rule only if 'when' options and user options are met.
      */
     when?: WhenOptions;

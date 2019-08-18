@@ -215,17 +215,11 @@ export class TranslitService {
         let outStr = '';
         let curStr = inputStr;
 
-        let lastRevisitIndex: number | undefined;
-
         while (curStr.length > 0) {
             let foundRule = false;
 
             for (let i = 0; i < rulePhase.rules.length; i++) {
                 const ruleItem = rulePhase.rules[i];
-
-                if (i === lastRevisitIndex) {
-                    continue;
-                }
 
                 if (ruleItem.when && (!ruleItem.tplSeqName || ruleItem.firstSeq)) {
                     const whenOptions = ruleItem.when;
@@ -317,11 +311,7 @@ export class TranslitService {
 
                     outStr += replacedString.substring(0, revisit);
                     curStr = replacedString.substring(revisit) + curStr.substring(matchedString.length);
-
-                    lastRevisitIndex = revisit > 0 ? undefined : i;
                 } else {
-                    lastRevisitIndex = undefined;
-
                     outStr += replacedString;
                     curStr = curStr.substring(matchedString.length);
                 }
@@ -330,14 +320,13 @@ export class TranslitService {
             }
 
             if (!foundRule && curStr.length > 0) {
-                lastRevisitIndex = undefined;
-
                 outStr += curStr[0];
                 curStr = curStr.substring(1);
             }
 
             // Prevent endless loop
             if (curStr === inputStr) {
+                outStr = inputStr;
                 break;
             }
         }
@@ -460,28 +449,41 @@ export class TranslitService {
 
         for (const k1 of varNames) {
             let curValue = tplVar[k1];
-            const changedValues: string[] = [curValue];
+            const processedKeys: string[] = [k1];
+            const errMsg = `Circular variable was detected while initializing 'tplVar', name: '${k1}'.`;
 
             while (curValue.includes('#')) {
+                let foundLocal = false;
                 for (const k2 of varNames.filter(k => k !== k1)) {
                     if (curValue.includes(k2)) {
                         curValue = curValue.replace(new RegExp(k2, 'g'), tplVar[k2]);
+                        foundLocal = true;
+                        if (!processedKeys.includes(k2)) {
+                            processedKeys.push(k2);
+                        } else {
+                            throw new Error(errMsg);
+                        }
                     }
                 }
 
+                let foundGlobal = false;
                 for (const k2 of globalVarNames) {
                     if (curValue.includes(k2)) {
-                        curValue = curValue.replace(new RegExp(k2, 'g'), (globalTplVar as { [key: string]: string })[k2]);
+                        const v2 = (globalTplVar as { [key: string]: string })[k2];
+                        curValue = curValue.replace(new RegExp(k2, 'g'), v2);
+                        foundGlobal = true;
+
+                        if (v2.includes('#') && varNames.find(k => v2.includes(k)) != null) {
+                            throw new Error(errMsg);
+                        }
                     }
                 }
 
-                tplVar[k1] = curValue;
-
-                if (changedValues.includes(curValue)) {
+                if (foundLocal || foundGlobal) {
+                    tplVar[k1] = curValue;
+                } else {
                     break;
                 }
-
-                changedValues.push(curValue);
             }
         }
     }

@@ -51,16 +51,15 @@ export function formatCodePoints(str?: string): string {
 }
 
 export function toFailOutput(result: TranslitResult): string {
-    // let str = `\n\ninput: ${formatCodePoints(input)}\n`;
-    let str = `output: ${formatCodePoints(result.outputText)}\n\n`;
+    let str = `\noutput: ${formatCodePoints(result.outputText)}\n\n`;
 
     if (result.traces) {
         for (const trace of result.traces) {
             str += `from: ${formatCodePoints(trace.from)}\n`;
             str += `to: ${formatCodePoints(trace.to)}\n`;
-            // str += `input: ${formatCodePoints(trace.inputString)}\n`;
+            str += `input: ${formatCodePoints(trace.inputString)}\n`;
             // str += `matched: ${formatCodePoints(trace.matchedString)}\n`;
-            // str += `replaced: ${formatCodePoints(trace.replacedString)}\n`;
+            str += `replaced: ${formatCodePoints(trace.replacedString)}\n`;
 
             if (trace.postRuleTraces && trace.postRuleTraces.length > 0) {
                 str += 'post rules:\n';
@@ -884,35 +883,6 @@ describe('TranslitService#translit', () => {
             });
     });
 
-    it("should work with 'revisit' rule option", (done: DoneFn) => {
-        TestBed.configureTestingModule({
-            providers: [
-                TranslitService
-            ]
-        });
-
-        const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
-
-        const testRules: TranslitRulePhase[] = [{
-            rules: [{
-                from: '\u101D\u101D',
-                to: '\u101D\u1040',
-                revisit: 1
-            },
-            {
-                from: '\u1040\u1041',
-                to: '\u1041\u1040',
-                revisit: 3
-            }]
-        }];
-
-        translitService.translit('\u101D\u101D\u1041', 'rule1', testRules)
-            .subscribe(result => {
-                expect(result.outputText).toBe('\u101D\u1041\u1040', toFailOutput(result));
-                done();
-            });
-    });
-
     it("should work with match only rule (no 'to' provided)", (done: DoneFn) => {
         TestBed.configureTestingModule({
             providers: [
@@ -1598,7 +1568,217 @@ describe('TranslitService#translit', () => {
         });
     });
 
-    it("should throw an error message if both 'ruleName' and 'rulesToUse' are not provided", () => {
+    it("should work with 'postRulesStrategy' = 'whileMatch' with 'tplSeq'", (done: DoneFn) => {
+        TestBed.configureTestingModule({
+            providers: [
+                TranslitService
+            ]
+        });
+
+        const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
+
+        const testRules: TranslitRulePhase[] = [{
+            tplVar: {
+                '#3ar': '\u1060-\u1063\u1065-\u1069\u106C\u106D\u1070-\u107C\u1085\u1093\u1096',
+                '#3cr': '#3ar\u103A',
+                '#3dr': '#3cr\u103C',
+                '#64And8bTo8dr': '#3dr\u103D',
+                '#2dOr2er': '#64And8bTo8dr\u1064\u108B-\u108D',
+                '#2fOr30r': '#2dOr2er\u102D\u102E',
+                '#32Or36r': '#2fOr30r\u102F\u1030',
+                '#37r': '#32Or36r\u102B\u102C\u1032\u1036',
+                '#r': '#37r'
+            },
+            tplSeq: {
+                '#sx': [
+                    ['\u102B', '\u102B', 6],
+                    ['\u1032', '\u1032', 1],
+                    ['\u1036', '\u1036', 1],
+                    ['\u1037', '\u1037', 1],
+                    ['\u1039', '\u1039', 2],
+                    ['\u103C', '\u103C', 2],
+                    ['\u1064', '\u1064', 1],
+                    ['\u108B', '\u108B', 1],
+                    ['\u108C', '\u108C', 1],
+                    ['\u108D', '\u108D', 1]
+                ],
+                '#32Or36x': [
+                    ['\u1032', '\u1032', 1],
+                    ['\u1036', '\u1036', 1]
+                ],
+                '#2fOr30x': [
+                    ['\u102F', '\u102F', 2]
+                ],
+                '#2dOr2ex': [
+                    ['\u102D', '\u102D', 2]
+                ]
+            },
+            postRulesDef: {
+                po: [
+                    {
+                        from: '(\u1037)([#37r])',
+                        to: '$2$1'
+                    },
+                    {
+                        from: '#32Or36x([#32Or36r])',
+                        to: '$1#32Or36x'
+                    },
+                    {
+                        from: '#2fOr30x([#2fOr30r])',
+                        to: '$1#2fOr30x'
+                    },
+                    {
+                        from: '#2dOr2ex([#2dOr2er])',
+                        to: '$1#2dOr2ex'
+                    },
+                    {
+                        from: '(\u103D)([#3dr])',
+                        to: '$2$1'
+                    },
+                    {
+                        from: '(\u103C)([#3cr])',
+                        to: '$2$1'
+                    },
+                    {
+                        from: '(\u103A)([#3ar])',
+                        to: '$2$1'
+                    }
+                ]
+            },
+            rules: [
+                {
+                    from: '#sx([#r]+)',
+                    to: '#sx$1',
+                    minLength: 2,
+                    quickTests: [['#sx', 0]],
+                    postRulesRef: 'po',
+                    postRulesStrategy: 'whileMatch'
+                },
+            ]
+        }];
+
+        translitService.translit('\u1000\u1036\u102E\u1060\u102F\u103A', 'rule1', testRules, undefined, true).subscribe(result => {
+            expect(result.outputText).toBe('\u1000\u1060\u103A\u102E\u102F\u1036', toFailOutput(result));
+            done();
+        });
+    });
+
+    it("should not continue next phase in 'applyRule' when 'outputText' was empty", (done: DoneFn) => {
+        TestBed.configureTestingModule({
+            providers: [
+                TranslitService
+            ]
+        });
+
+        const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
+
+        const testRules: TranslitRule = {
+            phases: [
+                {
+                    description: 'Phase 1',
+                    rules: [
+                        {
+                            from: '0',
+                            to: ''
+                        }
+                    ]
+                },
+                {
+                    description: 'Phase 2 (Skipped)',
+                    rules: [
+                        {
+                            from: '0',
+                            to: '1'
+                        }
+                    ]
+                }
+
+            ]
+        };
+
+        translitService.translit('0', 'rule1', testRules, undefined, true).subscribe(result => {
+            expect(result.outputText).toBe('', toFailOutput(result));
+            done();
+        });
+    });
+
+    it("should break loop in 'applySubRuleItems' when endless condition was detection", (done: DoneFn) => {
+        TestBed.configureTestingModule({
+            providers: [
+                TranslitService
+            ]
+        });
+
+        const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
+
+        const testRules: TranslitRulePhase[] = [{
+            postRulesDef: {
+                prs: [
+                    {
+                        from: '23',
+                        to: '32'
+                    },
+                    {
+                        from: '32',
+                        to: '2323'
+                    }
+                ]
+            },
+            rules: [
+                {
+                    from: '(23)',
+                    to: '$1',
+                    postRulesRef: 'prs',
+                    postRulesStrategy: 'whileMatch'
+                },
+            ]
+        }];
+
+        translitService.translit('123', 'rule1', testRules, undefined, true).subscribe(result => {
+            expect(result.outputText).toBe('12323', toFailOutput(result));
+            done();
+        });
+    });
+
+    it("should break loop in 'applySubRuleItems' when 'curStr' is empty", (done: DoneFn) => {
+        TestBed.configureTestingModule({
+            providers: [
+                TranslitService
+            ]
+        });
+
+        const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
+
+        const testRules: TranslitRulePhase[] = [{
+            postRulesDef: {
+                prs: [
+                    {
+                        from: '23',
+                        to: ''
+                    },
+                    {
+                        from: '23',
+                        to: '32'
+                    }
+                ]
+            },
+            rules: [
+                {
+                    from: '(23)',
+                    to: '$1',
+                    postRulesRef: 'prs',
+                    postRulesStrategy: 'whileMatch'
+                },
+            ]
+        }];
+
+        translitService.translit('1234', 'rule1', testRules, undefined, true).subscribe(result => {
+            expect(result.outputText).toBe('14', toFailOutput(result));
+            done();
+        });
+    });
+
+    it("should throw an error if both 'ruleName' and 'rulesToUse' are not provided", () => {
         TestBed.configureTestingModule({
             providers: [
                 TranslitService,
@@ -1611,10 +1791,10 @@ describe('TranslitService#translit', () => {
 
         const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
 
-        expect(() => translitService.translit('f1')).toThrowError("The 'ruleName' value is required if 'rulesToUse' is not provided.");
+        expect(() => translitService.translit('any')).toThrowError("The 'ruleName' value is required if 'rulesToUse' is not provided.");
     });
 
-    it('should throw an error message when an invalid rule error occour', () => {
+    it('should throw an error when an invalid rule was detected', () => {
         TestBed.configureTestingModule({
             providers: [
                 TranslitService
@@ -1623,17 +1803,17 @@ describe('TranslitService#translit', () => {
 
         const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
 
-        const invalidRule1 = [
+        const invalidRule = [
             {
                 description: 'invalid rule phase'
             }
         ];
 
-        expect(() => translitService.translit('f1', undefined, invalidRule1 as TranslitRuleAny))
+        expect(() => translitService.translit('any', undefined, invalidRule as TranslitRuleAny))
             .toThrowError('Error in parsing translit rule, invalid rule schema.');
     });
 
-    it("should throw an error message when an invalid 'tplSeq' error occour", () => {
+    it("should throw an error when an invalid 'tplSeq' was detected", () => {
         TestBed.configureTestingModule({
             providers: [
                 TranslitService
@@ -1685,17 +1865,17 @@ describe('TranslitService#translit', () => {
             }]
         }];
 
-        expect(() => translitService.translit('f1', undefined, invalidTplSeq1))
+        expect(() => translitService.translit('any', undefined, invalidTplSeq1))
             .toThrowError("Error in parsing translit rule, to use 'tplSeq', 'to' value is required, phase: 1, rule: 1.");
-        expect(() => translitService.translit('f1', undefined, invalidTplSeq2))
+        expect(() => translitService.translit('any', undefined, invalidTplSeq2))
             .toThrowError("Error in parsing translit rule, tplSeq name: '#x' could not be found in 'to' value, phase: 1, rule: 1.");
-        expect(() => translitService.translit('f1', undefined, invalidTplSeq3))
+        expect(() => translitService.translit('any', undefined, invalidTplSeq3))
             .toThrowError('Error in parsing translit rule, invalid template value definition, phase: 1, rule: 1.');
-        expect(() => translitService.translit('f1', undefined, invalidTplSeq4))
+        expect(() => translitService.translit('any', undefined, invalidTplSeq4))
             .toThrowError('Error in parsing translit rule, invalid template value definition, phase: 1, rule: 1.');
     });
 
-    it('should throw an error message when loader returns an error', (done: DoneFn) => {
+    it('should throw an error when loader returns an error', (done: DoneFn) => {
         TestBed.configureTestingModule({
             providers: [
                 TranslitService,
@@ -1708,7 +1888,7 @@ describe('TranslitService#translit', () => {
 
         const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
 
-        translitService.translit('f1', 'loaderError').subscribe({
+        translitService.translit('any', 'loaderError').subscribe({
             error(actualError: Error): void {
                 expect(of(actualError)).toBeTruthy();
                 expect(actualError).not.toBeNull();
@@ -1716,5 +1896,63 @@ describe('TranslitService#translit', () => {
                 done();
             }
         });
+    });
+
+    it("should throw an error when circular variable was detected in 'tplVar'", () => {
+        TestBed.configureTestingModule({
+            providers: [
+                TranslitService
+            ]
+        });
+
+        const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
+
+        const invalidTplVar: TranslitRulePhase[] = [{
+            tplVar: {
+                '#s3': '#s2',
+                '#s2': '#s3',
+                '#s1': '#s2'
+            },
+            rules: [
+                {
+                    from: '(#s1)',
+                    to: '$1'
+                },
+            ]
+        }];
+
+        expect(() => translitService.translit('any', undefined, invalidTplVar))
+            .toThrowError("Circular variable was detected while initializing 'tplVar', name: '#s2'.");
+    });
+
+    it("should throw an error when circular variable was detected in global 'tplVar'", () => {
+        TestBed.configureTestingModule({
+            providers: [
+                TranslitService
+            ]
+        });
+
+        const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
+
+        const invalidTplVar: TranslitRule = {
+            tplVar: {
+                '#s3': '#s1',
+                '#s2': '#s3'
+            },
+            phases: [{
+                tplVar: {
+                    '#s1': '#s2'
+                },
+                rules: [
+                    {
+                        from: '(#s1)',
+                        to: '$1'
+                    },
+                ]
+            }]
+        };
+
+        expect(() => translitService.translit('any', undefined, invalidTplVar))
+            .toThrowError("Circular variable was detected while initializing 'tplVar', name: '#s1'.");
     });
 });

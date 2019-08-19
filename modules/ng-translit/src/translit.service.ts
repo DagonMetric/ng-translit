@@ -685,8 +685,8 @@ export class TranslitService {
         }
 
         for (const tplSeqPart of tplSeqValue) {
-            const fromStart = tplSeqPart[0].trim();
-            const toStart = tplSeqPart[1].trim();
+            const fromStart = tplSeqPart[0];
+            const toStart = tplSeqPart[1];
             const seqCount = tplSeqPart[2];
 
             if (!fromStart || fromStart.length !== 1 || seqCount < 1) {

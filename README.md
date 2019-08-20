@@ -6,19 +6,22 @@
 [![npm version](https://img.shields.io/npm/v/@dagonmetric/ng-translit.svg)](https://www.npmjs.com/package/@dagonmetric/ng-translit)
 [![Gitter](https://badges.gitter.im/DagonMetric/general.svg)](https://gitter.im/DagonMetric/general?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-Transliteration service for Angular applications which can be used in swapping letters such as α → a, ၎ → ၎င်း or Zawgyi-One to standard Myanmar Unicode.
+Powerful transliteration service for Angular applications which can be used in swapping letters such as α → a, ၎ → ၎င်း or Zawgyi-One to standard Myanmar Unicode.
 
 ## Features
 
-* Transliteration rules can be passed on the fly or can be defined in JSON file which can be loaded lazily or eagerly using extendable `TranslitRuleLoader` (see built-in [HttpTranslitRuleLoader](https://github.com/DagonMetric/ng-translit/blob/master/modules/ng-translit/http-loader/src/http-translit-rule-loader.ts) for implementation demo)
-* Template variables or loop/sequence variables can be defined in rule to reduce JSON size and to avoid long repeated text or rule items
-* Quick test character checking for better performance
-* Post rules can be defined for step-by-step conversions
-* The `postRulesDef` and `postRulesRef` options can be used to reduce JSON size
+* Can transliterate/convert any script or Unicode letters by using from a simplest rule definition (just with `from` and `to` rules) to more powerful rule definition (with `tplVar`, `tplSeq`, `when`, `postRules`, etc.)
+* Can use transliteration rules in both design-time and run-time with JSON file which can be loaded lazily or eagerly using extendable `TranslitRuleLoader` (see built-in [HttpTranslitRuleLoader](https://github.com/DagonMetric/ng-translit/blob/master/modules/ng-translit/http-loader/src/http-translit-rule-loader.ts) for implementation demo)
+* Can transliterate input phase by phase
+* Can define template variables with `tplVar` to reduce JSON size and to avoid repetition
+* Can define template loop sequences with `tplSeq` for sequential rules checking and replacement
+* Quick test input string checking with `quickTests` and `minLength` options for better performance
+* Can check converted left portion string with `hasLeft` boolean option and `left` regular expression option
+* Conditional rules processing with `when` and `skip` options
+* Can define post-rules with `postRules` for step-by-step conversions
+* Can use `postRulesDef` and `postRulesRef`  to reduce JSON size and to avoid repetition in defining `postRules`
 * Conversion trace information can be included in output result for debugging purpose
-* Conditional rules with `when` options can be used
-* Previous replaced left part string checking with `left` rule option
-* Latest versions of Angular are supported
+* Work with latest versions of Angular
 * Compatible with Angular Universal (Server Side Rendering - SSR)
 * Powered with RxJS
 
@@ -91,13 +94,13 @@ export class AppComponent {
 
 * [ng-translit wiki](https://github.com/DagonMetric/ng-translit/wiki)
 
-## Transliterate Rules
+## Popular Transliterate Rules
 
-* [zawgyi-unicode-translit-rules](https://github.com/myanmartools/zawgyi-unicode-translit-rules) - Zawgyi Unicode convert/transliterate rules in JSON and JavaScript formats
+* [zawgyi-unicode-translit-rules](https://github.com/myanmartools/zawgyi-unicode-translit-rules) - Zawgyi Unicode convert/transliterate rules in JSON and JavaScript formats using `ng-translit`
 
 ## Live Application
 
-* [Zawgyi Unicode Converter](https://zawgyi-unicode-converter.myanmartools.org) - Angular Progress Web Application designed to detect & convert Myanmar font encoding between Zawgyi-One and Standard Myanmar Unicode
+* [Zawgyi Unicode Converter](https://zawgyi-unicode-converter.myanmartools.org) - Angular Progress Web Application designed to convert Myanmar font encodings between Zawgyi-One and Standard Myanmar Unicode
 
 ## Feedback and Contributing
 

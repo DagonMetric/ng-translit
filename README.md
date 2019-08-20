@@ -17,6 +17,7 @@ Powerful transliteration service for Angular applications which can be used in s
 * Can define template loop sequences with `tplSeq` for sequential rules checking and replacement
 * Quick test input string checking with `quickTests` and `minLength` options for better performance
 * Can check converted left portion string with `hasLeft` boolean option and `left` regular expression option
+* Can check right part after matched input string with `right` regular expression option
 * Conditional rules processing with `when` and `skip` options
 * Can define post-rules with `postRules` for step-by-step conversions
 * Can use `postRulesDef` and `postRulesRef`  to reduce JSON size and to avoid repetition in defining `postRules`

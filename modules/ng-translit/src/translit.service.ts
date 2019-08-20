@@ -300,9 +300,28 @@ export class TranslitService {
                     continue;
                 }
 
+                const matchedString = m[0];
+                const rightPart = curStr.substring(matchedString.length);
+
+                if (ruleItem.rightRegExp != null) {
+                    if (rightPart.length > 0) {
+                        const rightMatch = rightPart.match(ruleItem.rightRegExp);
+                        if (rightMatch == null) {
+                            if (ruleItem.firstSeq && ruleItem.totalSeqCount) {
+                                i += ruleItem.totalSeqCount - 1;
+                            }
+                            continue;
+                        }
+                    } else {
+                        if (ruleItem.firstSeq && ruleItem.totalSeqCount) {
+                            i += ruleItem.totalSeqCount - 1;
+                        }
+                        continue;
+                    }
+                }
+
                 foundRule = true;
 
-                const matchedString = m[0];
                 let replacedString = ruleItem.parsedTo != null ?
                     matchedString.replace(ruleItem.fromRegExp, ruleItem.parsedTo) : matchedString;
 
@@ -328,7 +347,7 @@ export class TranslitService {
                 }
 
                 outStr += replacedString;
-                curStr = curStr.substring(matchedString.length);
+                curStr = rightPart;
 
                 break;
             }
@@ -595,7 +614,8 @@ export class TranslitService {
             parsedFrom: ruleItem.from,
             fromRegExp: undefined as unknown as RegExp,
             parsedTo: ruleItem.to,
-            parsedLeft: (ruleItem as TranslitRuleItem).left
+            parsedLeft: (ruleItem as TranslitRuleItem).left,
+            parsedRight: (ruleItem as TranslitRuleItem).right
         };
 
         for (const varName of varNames) {
@@ -608,6 +628,9 @@ export class TranslitService {
             }
             if (parsedRuleItem.parsedLeft && parsedRuleItem.parsedLeft.includes(varName)) {
                 parsedRuleItem.parsedLeft = parsedRuleItem.parsedLeft.replace(new RegExp(varName, 'g'), value);
+            }
+            if (parsedRuleItem.parsedRight && parsedRuleItem.parsedRight.includes(varName)) {
+                parsedRuleItem.parsedRight = parsedRuleItem.parsedRight.replace(new RegExp(varName, 'g'), value);
             }
         }
 
@@ -629,6 +652,9 @@ export class TranslitService {
                 new RegExp(`${parsedRuleItem.parsedFrom}`, 'g') : new RegExp(`^${parsedRuleItem.parsedFrom}`);
             if (parsedRuleItem.parsedLeft) {
                 parsedRuleItem.leftRegExp = new RegExp(`${parsedRuleItem.parsedLeft}$`);
+            }
+            if (parsedRuleItem.parsedRight) {
+                parsedRuleItem.rightRegExp = new RegExp(`^${parsedRuleItem.parsedRight}`);
             }
 
             let postRules: TranslitSubRuleItem[] | undefined;
@@ -764,6 +790,7 @@ export class TranslitService {
                         new RegExp(`${fromReplaced}`, 'g') : new RegExp(`^${fromReplaced}`),
                     parsedTo: (clonedParsedRuleItem.parsedTo as string).replace(tplSeqName, currToChar),
                     leftRegExp: clonedParsedRuleItem.parsedLeft ? new RegExp(`${clonedParsedRuleItem.parsedLeft}$`) : undefined,
+                    rightRegExp: clonedParsedRuleItem.parsedRight ? new RegExp(`^${clonedParsedRuleItem.parsedRight}`) : undefined,
                     parsedPostRules: postRules ? this.parseSubRuleItems(
                         postRules, tplSeq, tplVar, globalTplVar, postRulesDef, postRulesStrategy, phaseIndex, ruleIndex) : undefined
                 };

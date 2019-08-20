@@ -100,6 +100,10 @@ export interface TranslitRuleItem {
      */
     left?: string;
     /**
+     * Regular expression pattern for checking right part string after input string matching.
+     */
+    right?: string;
+    /**
      * Apply the rule only if `when` options and user options are met.
      */
     when?: WhenOrSkipOptions;

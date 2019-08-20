@@ -1027,9 +1027,8 @@ describe('TranslitService#translit', () => {
         translitService.translit(
             '\u1006\u103D\u1037',
             'rule1',
-            testRules,
-            { flag1: true, flag2: true },
-            true).subscribe(result => {
+            testRules)
+            .subscribe(result => {
                 expect(result.outputText).toBe('\u1006\u103c\u1095', toFailOutput(result));
                 done();
             });
@@ -1072,6 +1071,96 @@ describe('TranslitService#translit', () => {
         translitService.translit('\u1000\u1039\u1000', 'rule1', testRules)
             .subscribe(result => {
                 expect(result.outputText).toBe('\u1000\u1060', toFailOutput(result));
+                done();
+            });
+    });
+
+    it("should work with 'right' rule options", (done: DoneFn) => {
+        TestBed.configureTestingModule({
+            providers: [
+                TranslitService
+            ]
+        });
+
+        const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
+
+        const testRules: TranslitRulePhase[] = [{
+            rules: [
+                {
+                    description: 'Should skip',
+                    from: '\u1040',
+                    to: '\u1030',
+                    right: '\u1040'
+                },
+                {
+                    from: '\u1040',
+                    to: '\u101D',
+                    right: '\u101D'
+                },
+                {
+                    description: 'Should skip',
+                    from: '\u101D',
+                    to: '\u1040',
+                    right: '\u1040'
+                },
+            ]
+        }];
+
+        translitService.translit(
+            '\u1040\u101D',
+            'rule1',
+            testRules)
+            .subscribe(result => {
+                expect(result.outputText).toBe('\u101D\u101D', toFailOutput(result));
+                done();
+            });
+    });
+
+    it("should work with 'right' with 'tplSeq'", (done: DoneFn) => {
+        TestBed.configureTestingModule({
+            providers: [
+                TranslitService
+            ]
+        });
+
+        const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
+
+        const testRules: TranslitRulePhase[] = [{
+            tplVar: {
+                '#a': '\u102F\u1030\u1037'
+            },
+            tplSeq: {
+                '@x': [
+                    ['\u102D', '\u102D', 2]
+                ],
+                '@x2': [
+                    ['\u102F', '\u1033', 2]
+                ]
+            },
+            rules: [
+                {
+                    description: 'Should skip',
+                    from: '\u1040@x',
+                    to: '\u1030@x',
+                    right: '\u1040'
+                },
+                {
+                    from: '\u1040@x',
+                    to: '\u101D@x',
+                    right: '[#a]'
+                },
+                {
+                    description: 'Should skip',
+                    from: '@x2',
+                    to: '@x2',
+                    right: '[\u1000-\u1021]'
+                }
+            ]
+        }];
+
+        translitService.translit('\u1040\u102D\u102F', 'rule1', testRules)
+            .subscribe(result => {
+                expect(result.outputText).toBe('\u101D\u102D\u102F', toFailOutput(result));
                 done();
             });
     });

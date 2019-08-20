@@ -41,7 +41,7 @@ export interface TranslitSubRuleItem {
      */
     to: string;
     /**
-     * Start index for searching. Set `-1` for skipping the rule.
+     * Start index for searching. Set `-1` for skipping the rule. It works only when `postRulesStrategy` is `startMatch`.
      * @minimum -1
      */
     start?: number;

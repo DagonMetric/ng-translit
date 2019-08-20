@@ -193,6 +193,13 @@ export class TranslitService {
                 }
             }
 
+            if (rulePhase.skip) {
+                const skipOptions = rulePhase.skip;
+                if (Object.keys(skipOptions).find(k => userOptions && (skipOptions[k] === userOptions[k]))) {
+                    continue;
+                }
+            }
+
             const outputText = this.applyRuleItems(translitResult.outputText, rulePhase, userOptions, translitResult.traces);
             if (!translitResult.replaced) {
                 translitResult.replaced = outputText !== translitResult.outputText;
@@ -228,6 +235,16 @@ export class TranslitService {
                 if (ruleItem.when && (!ruleItem.tplSeqName || ruleItem.firstSeq)) {
                     const whenOptions = ruleItem.when;
                     if (Object.keys(whenOptions).find(k => !userOptions || (whenOptions[k] !== userOptions[k]))) {
+                        if (ruleItem.firstSeq && ruleItem.totalSeqCount) {
+                            i += ruleItem.totalSeqCount - 1;
+                        }
+                        continue;
+                    }
+                }
+
+                if (ruleItem.skip && (!ruleItem.tplSeqName || ruleItem.firstSeq)) {
+                    const skipOptions = ruleItem.skip;
+                    if (Object.keys(skipOptions).find(k => userOptions && (skipOptions[k] === userOptions[k]))) {
                         if (ruleItem.firstSeq && ruleItem.totalSeqCount) {
                             i += ruleItem.totalSeqCount - 1;
                         }
@@ -352,6 +369,16 @@ export class TranslitService {
                 if (subRuleItem.when && (!subRuleItem.tplSeqName || subRuleItem.firstSeq)) {
                     const whenOptions = subRuleItem.when;
                     if (Object.keys(whenOptions).find(k => !userOptions || (whenOptions[k] !== userOptions[k]))) {
+                        if (subRuleItem.firstSeq && subRuleItem.totalSeqCount) {
+                            i += subRuleItem.totalSeqCount - 1;
+                        }
+                        continue;
+                    }
+                }
+
+                if (subRuleItem.skip && (!subRuleItem.tplSeqName || subRuleItem.firstSeq)) {
+                    const skipOptions = subRuleItem.skip;
+                    if (Object.keys(skipOptions).find(k => userOptions && (skipOptions[k] === userOptions[k]))) {
                         if (subRuleItem.firstSeq && subRuleItem.totalSeqCount) {
                             i += subRuleItem.totalSeqCount - 1;
                         }

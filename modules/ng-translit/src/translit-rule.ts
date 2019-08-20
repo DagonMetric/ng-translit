@@ -16,9 +16,9 @@ export interface TplVar {
 }
 
 /**
- * The 'when' options to apply only if it equals with user input options.
+ * The `when` or `skip` options to apply only if it equals with user input option.
  */
-export interface WhenOptions {
+export interface WhenOrSkipOptions {
     [option: string]: boolean | string;
 }
 
@@ -41,16 +41,20 @@ export interface TranslitSubRuleItem {
      */
     to: string;
     /**
-     * Start index for searching.
+     * Start index for searching. Set `-1` for skipping the rule.
      * @minimum -1
      */
     start?: number;
     /**
-     * Apply the rule only if 'when' options and user options are met.
+     * Apply the rule only if `when` options and user options are met.
      */
-    when?: WhenOptions;
+    when?: WhenOrSkipOptions;
     /**
-     * Group code for grouping 'OR' items.
+     * Apply the rule only if `skip` options and user options are met.
+     */
+    skip?: WhenOrSkipOptions;
+    /**
+     * Group code for grouping `or` items.
      */
     orGroup?: string;
 }
@@ -79,26 +83,30 @@ export interface TranslitRuleItem {
      */
     to?: string;
     /**
-     * Minimum input string length for quick checking.
+     * Minimum input string length matching for quick checking purpose.
      * @minimum 1
      */
     minLength?: number;
     /**
-     * Array of input string [char, index] for quick checking.
+     * Array of input string character and index position matching for quick checking purpose.
      */
     quickTests?: [string, number][];
     /**
-     * If true, only match and replace when has previous replaced left part string. If falase, only start of string.
+     * Set `true` to replace only if there was any converted left part characters, set `false` for reverse purpose checking.
      */
     hasLeft?: boolean;
     /**
-     * Regular expression pattern for checking previous left part string.
+     * Regular expression pattern for checking converted left part string.
      */
     left?: string;
     /**
-     * Apply the rule only if 'when' options and user options are met.
+     * Apply the rule only if `when` options and user options are met.
      */
-    when?: WhenOptions;
+    when?: WhenOrSkipOptions;
+    /**
+     * Apply the rule only if `skip` options and user options are met.
+     */
+    skip?: WhenOrSkipOptions;
     /**
      * Sub-rule items to be processed after replaced.
      * @minItems 1
@@ -109,7 +117,7 @@ export interface TranslitRuleItem {
      */
     postRulesStart?: { [orGroup: string]: number };
     /**
-     * The name defined in `postRulesDef`.
+     * Set the name defined in `postRulesDef` for referencing post rules.
      */
     postRulesRef?: string;
     /**
@@ -141,13 +149,17 @@ export interface TranslitRulePhase {
      */
     tplSeq?: { [key: string]: [string, string, number][] };
     /**
-     * Post rules definitions to be used for `postRulesRef`.
+     * Post rules definitions to be used with `postRulesRef`.
      */
     postRulesDef?: { [key: string]: TranslitSubRuleItem[] };
     /**
-     * Apply the phase only if 'when' options and user options are met.
+     * Apply the phase only if `when` options and user options are met.
      */
-    when?: WhenOptions;
+    when?: WhenOrSkipOptions;
+    /**
+     * Apply the phase only if `skip` options and user options are met.
+     */
+    skip?: WhenOrSkipOptions;
 }
 
 /**

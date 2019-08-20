@@ -610,6 +610,47 @@ describe('TranslitService#translit', () => {
             });
     });
 
+    it("should work with phase level 'skip' options", (done: DoneFn) => {
+        TestBed.configureTestingModule({
+            providers: [
+                TranslitService
+            ]
+        });
+
+        const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
+
+        const testRules: TranslitRulePhase[] = [
+            {
+                skip: {
+                    flag1: true
+                },
+                rules: [
+                    {
+                        from: '\u1040',
+                        to: '\u1041'
+                    }
+                ]
+            },
+            {
+                skip: {
+                    flag2: true
+                },
+                rules: [
+                    {
+                        from: '\u1040',
+                        to: '\u101D'
+                    }
+                ]
+            }
+        ];
+
+        translitService.translit('\u1040', 'rule1', testRules, { flag1: true })
+            .subscribe(result => {
+                expect(result.outputText).toBe('\u101D', toFailOutput(result));
+                done();
+            });
+    });
+
     it("should work with global 'tplVar' rule options", (done: DoneFn) => {
         TestBed.configureTestingModule({
             providers: [
@@ -794,6 +835,51 @@ describe('TranslitService#translit', () => {
             });
     });
 
+    it("should work with 'skip' rule options", (done: DoneFn) => {
+        TestBed.configureTestingModule({
+            providers: [
+                TranslitService
+            ]
+        });
+
+        const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
+
+        const testRules: TranslitRulePhase[] = [{
+            tplSeq: {
+                '#s1': [['\u1040', '\u0030', 10]],
+            },
+            rules: [
+                {
+                    from: '\u1040',
+                    to: '\u1030',
+                    skip: {
+                        flag1: true
+                    }
+                },
+                {
+                    from: '#s1',
+                    to: '#s1',
+                    skip: {
+                        flag1: true
+                    }
+                },
+                {
+                    from: '\u1040',
+                    to: '\u101D',
+                    skip: {
+                        flag2: true
+                    }
+                }
+            ]
+        }];
+
+        translitService.translit('\u1040', 'rule1', testRules, { flag1: true })
+            .subscribe(result => {
+                expect(result.outputText).toBe('\u101D', toFailOutput(result));
+                done();
+            });
+    });
+
     it("should work with 'hasLeft' rule option", (done: DoneFn) => {
         TestBed.configureTestingModule({
             providers: [
@@ -925,7 +1011,7 @@ describe('TranslitService#translit', () => {
                     to: '\u103C'
                 },
                 {
-                    description: 'skip',
+                    description: 'skip rule',
                     from: '([\u1000-\u1021])\u1037',
                     to: '$1\u1037',
                     left: '[\u1000-\u1005]'
@@ -1256,6 +1342,74 @@ describe('TranslitService#translit', () => {
                             start: 2,
                             when: {
                                 flag2: true
+                            }
+                        }
+                    ]
+                }
+            ]
+        }];
+
+        translitService.translit(
+            '\u1004\u103A\u1039\u1000\u1039\u1007\u103C\u103D\u103E\u1031\u102D',
+            'rule1',
+            testRules,
+            { flag1: true, flag2: true },
+            true).subscribe(result => {
+                expect(result.outputText).toBe('\u1031\u103B\u1000\u1068\u108B', toFailOutput(result));
+                done();
+            });
+    });
+
+    it("should work with 'postRules' and 'skip' with 'tplSeq'", (done: DoneFn) => {
+        TestBed.configureTestingModule({
+            providers: [
+                TranslitService
+            ]
+        });
+
+        const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
+
+        const testRules: TranslitRulePhase[] = [{
+            tplVar: {
+                '#c1': '\u1000-\u1007',
+                '#c2': '\u1000-\u1021\u103F'
+            },
+            tplSeq: {
+                '#s1': [['\u102D', '\u108B', 1], ['\u102E', '\u108C', 1]],
+                '#s2': [['\u1000', '\u1060', 4], ['\u1005', '\u1065', 1], ['\u1006', '\u1067', 3]]
+            },
+            rules: [
+                {
+                    description: 'Should match',
+                    from: '\u1004\u103A\u1039([#c1]\u1039[#c1])\u103C\u103D\u103E\u1031#s1',
+                    to: '\u1031\u103B$1#s1',
+                    skip: {
+                        flag3: true
+                    },
+                    postRules: [
+                        {
+                            description: 'Should not match',
+                            from: '([#c2])\u1039#s2',
+                            to: '$1#s2',
+                            skip: {
+                                flag1: true
+                            }
+                        },
+                        {
+                            description: 'Should not match',
+                            from: '\u1039\u1000',
+                            to: '\u1060',
+                            skip: {
+                                flag2: true
+                            }
+                        },
+                        {
+                            description: 'Should match',
+                            from: '([#c2])\u1039#s2',
+                            to: '$1#s2',
+                            start: 2,
+                            skip: {
+                                flag3: true
                             }
                         }
                     ]

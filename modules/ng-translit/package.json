@@ -1,7 +1,7 @@
 {
   "name": "@dagonmetric/ng-translit",
   "version": "0.0.0-PLACEHOLDER",
-  "description": "Transliterate service for Angular which can be used in swapping letters such as α → a, ၎ → ၎င်း or Zawgyi-One to standard Myanmar Unicode.",
+  "description": "Powerful transliterate service for Angular which can be used in swapping letters such as α → a, ၎ → ၎င်း or Zawgyi-One to standard Myanmar Unicode.",
   "keywords": [
     "angular-transliterate",
     "transliteration",

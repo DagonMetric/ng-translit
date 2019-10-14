@@ -1,12 +1,11 @@
 {
   "name": "ng-translit",
   "version": "14.2.0",
-  "private": true,
   "author": "DagonMetric",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/DagonMetric/ng-translit.git"
+    "url": "git+https://github.com/DagonMetric/ng-translit.git"
   },
   "bugs": {
     "url": "https://github.com/DagonMetric/ng-translit/issues"

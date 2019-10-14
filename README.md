@@ -95,7 +95,7 @@ export class AppComponent {
 
 * [ng-translit wiki](https://github.com/DagonMetric/ng-translit/wiki)
 
-## Popular Transliterate Rules
+## Transliterate Rules
 
 * [zawgyi-unicode-translit-rules](https://github.com/myanmartools/zawgyi-unicode-translit-rules) - Zawgyi Unicode convert/transliterate rules in JSON and JavaScript formats using `ng-translit`
 

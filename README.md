@@ -1,6 +1,6 @@
 # Transliterate Service for Angular
 
-[![Build Status](https://github.com/DagonMetric/ng-translit/workflows/CI/badge.svg)](https://github.com/DagonMetric/ng-translit/actions)
+[![Build Status](https://github.com/DagonMetric/ng-translit/workflows/Main%20workflow/badge.svg)](https://github.com/DagonMetric/ng-translit/actions)
 [![Build Status](https://dev.azure.com/DagonMetric/ng-translit/_apis/build/status/DagonMetric.ng-translit?branchName=master)](https://dev.azure.com/DagonMetric/ng-translit/_build/latest?definitionId=8&branchName=master)
 [![codecov](https://codecov.io/gh/DagonMetric/ng-translit/branch/master/graph/badge.svg)](https://codecov.io/gh/DagonMetric/ng-translit)
 [![npm version](https://img.shields.io/npm/v/@dagonmetric/ng-translit.svg)](https://www.npmjs.com/package/@dagonmetric/ng-translit)

@@ -1,12 +1,12 @@
 # Transliterate Service for Angular
 
+[![Build Status](https://github.com/DagonMetric/ng-translit/workflows/CI/badge.svg)](https://github.com/DagonMetric/ng-translit/actions)
 [![Build Status](https://dev.azure.com/DagonMetric/ng-translit/_apis/build/status/DagonMetric.ng-translit?branchName=master)](https://dev.azure.com/DagonMetric/ng-translit/_build/latest?definitionId=8&branchName=master)
-[![CircleCI](https://circleci.com/gh/DagonMetric/ng-translit/tree/master.svg?style=svg)](https://circleci.com/gh/DagonMetric/ng-translit/tree/master)
 [![codecov](https://codecov.io/gh/DagonMetric/ng-translit/branch/master/graph/badge.svg)](https://codecov.io/gh/DagonMetric/ng-translit)
 [![npm version](https://img.shields.io/npm/v/@dagonmetric/ng-translit.svg)](https://www.npmjs.com/package/@dagonmetric/ng-translit)
 [![Gitter](https://badges.gitter.im/DagonMetric/general.svg)](https://gitter.im/DagonMetric/general?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-Powerful transliteration service for Angular applications which can be used in swapping letters such as α → a, ၎ → ၎င်း or Zawgyi-One to standard Myanmar Unicode.
+General purpose transliteration service for Angular applications which can be used in swapping letters such as α → a, ၎ → ၎င်း or Zawgyi-One to standard Myanmar Unicode.
 
 ## Features
 

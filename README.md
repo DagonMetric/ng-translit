@@ -1,7 +1,7 @@
 # Transliterate Service for Angular
 
-[![Build Status](https://github.com/DagonMetric/ng-translit/workflows/Main%20Workflow/badge.svg)](https://github.com/DagonMetric/ng-translit/actions)
-[![Build Status](https://dev.azure.com/DagonMetric/ng-translit/_apis/build/status/DagonMetric.ng-translit?branchName=master)](https://dev.azure.com/DagonMetric/ng-translit/_build/latest?definitionId=8&branchName=master)
+[![GitHub Actions Status](https://github.com/DagonMetric/ng-translit/workflows/Main%20Workflow/badge.svg)](https://github.com/DagonMetric/ng-translit/actions)
+[![Azure Pipelines Status](https://dev.azure.com/DagonMetric/ng-translit/_apis/build/status/DagonMetric.ng-translit?branchName=master)](https://dev.azure.com/DagonMetric/ng-translit/_build/latest?definitionId=8&branchName=master)
 [![codecov](https://codecov.io/gh/DagonMetric/ng-translit/branch/master/graph/badge.svg)](https://codecov.io/gh/DagonMetric/ng-translit)
 [![npm version](https://img.shields.io/npm/v/@dagonmetric/ng-translit.svg)](https://www.npmjs.com/package/@dagonmetric/ng-translit)
 [![Gitter](https://badges.gitter.im/DagonMetric/general.svg)](https://gitter.im/DagonMetric/general?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)

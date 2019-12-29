@@ -1,18 +1,16 @@
 # How to contribute
 
-One of the easiest ways to contribute is to participate in discussions and discuss issues. You can also contribute by submitting pull requests with code changes.
+One of the easiest ways to contribute is to participate in discussions and report issues. You can also contribute by submitting pull requests with code changes.
 
-## General feedback and discussions
-
-### Github issues
+## Report Issues
 
 We use [Github issues](https://github.com/DagonMetric/ng-translit/issues) to track public bugs. Please ensure your description is clear and has sufficient instructions to be able to reproduce the issue.
 
-### Discussions
+## General Discussions
 
-* [Gitter Channel](https://gitter.im/DagonMetric/general) for general DagonMetric's open source products discussion.
+We use [Gitter Channel](https://gitter.im/DagonMetric/general) for general DagonMetric's open source products discussion.
 
-## Contributing code and content
+## Contributing Code and Content
 
 This is a rough outline of what a contributor's workflow looks like:
 

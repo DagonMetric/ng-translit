@@ -121,7 +121,7 @@ export class TranslitService {
             };
 
             this._fetchRequests[ruleName]
-                .subscribe((rule) => {
+                .subscribe(rule => {
                     const translitResult = this.applyRule(sourceText, rule, userOptions, trace);
                     onComplete(translitResult);
                 }, onError);
@@ -164,7 +164,7 @@ export class TranslitService {
         );
 
         this._fetchRequests[ruleName]
-            .subscribe((rule) => {
+            .subscribe(rule => {
                 this.cachedRules.set(ruleName, rule);
                 this._fetching[ruleName] = false;
             }, () => {
@@ -781,7 +781,7 @@ export class TranslitService {
                 const parsedSeqRuleItem: TranslitRuleItemParsed = {
                     ...clonedParsedRuleItem,
                     index: subRuleIndex == null ? ruleIndex || 0 : subRuleIndex,
-                    seqIndex: seqIndex,
+                    seqIndex,
                     tplSeqName,
                     firstSeq,
                     totalSeqCount,

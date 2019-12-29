@@ -72,7 +72,7 @@ describe('HttpTranslitRuleLoaderModule#withOptions', () => {
                 HttpClientTestingModule,
                 HttpTranslitRuleLoaderModule.withOptions({
                     baseUrl: '/',
-                    endpointFactory: endpointFactory
+                    endpointFactory
                 })
             ]
         });

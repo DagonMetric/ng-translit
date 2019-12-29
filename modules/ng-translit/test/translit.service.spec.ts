@@ -114,13 +114,12 @@ export class FakeTranslitRuleLoader implements TranslitRuleLoader {
 
         if (ruleName === 'loaderError') {
             return throwError('loaderError');
-        } if (ruleName === 'invalidRule') {
+        } else if (ruleName === 'invalidRule') {
             return of(this._invalidRule as TranslitRuleAny);
         } else {
             this._rule1.version = `${this._counter}`;
             this._rule1.phases[0].rules[0].from = `f${this._counter}`;
             this._rule1.phases[0].rules[0].to = `t${this._counter}`;
-
             return of(this._rule1).pipe(
                 delay(50)
             );

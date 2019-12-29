@@ -9,8 +9,8 @@
   ],
   "rules": {
     // Core rules with custom configurations
-    // "align": false,
     "array-type": [true, "array"],
+    "arrow-parens": [true, "ban-single-arg-parens"],
     "arrow-return-shorthand": true,
     "callable-types": true,
     "class-name": true,
@@ -22,7 +22,6 @@
     "deprecation": {
       "severity": "warn"
     },
-    // "eofline": false,
     "forin": true,
     "import-spacing": true,
     "indent": [
@@ -62,10 +61,8 @@
         ]
       }
     ],
-    // "newline-per-chained-call": false,
     "no-angle-bracket-type-assertion": true,
     "no-arg": true,
-    // "no-bitwise": true,
     "no-console": [
       true,
       "debug",
@@ -97,7 +94,6 @@
     "no-unnecessary-class": false,
     "no-unnecessary-initializer": true,
     "no-unused-expression": true,
-    "no-use-before-declare": true,
     "no-var-keyword": true,
     "object-literal-sort-keys": false,
     "one-line": [

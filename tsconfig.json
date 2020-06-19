@@ -3,8 +3,8 @@
     "target": "es2015",
     "module": "esnext",
     "moduleResolution": "node",
+
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
 
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
@@ -24,17 +24,10 @@
 
     "baseUrl": ".",
     "rootDir": ".",
-    "outDir": "./dist/out-tsc",
+    "outDir": "./out-tsc",
 
     "paths": {
       "@dagonmetric/ng-translit": [ "./modules/ng-translit" ]
-    },
-
-    "plugins": [
-      {
-        "name": "typescript-tslint-plugin",
-        "configFile": "tslint.json"
-      }
-    ]
+    }
   }
 }

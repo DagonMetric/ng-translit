@@ -22,25 +22,25 @@ import { TranslitRuleStore } from '../src/translit-rule-store';
 @Injectable()
 export class FakeTranslitRuleLoader implements TranslitRuleLoader {
     load(): Observable<TranslitRuleAny> {
-        return of([{
-            from: '\u103F',
-            to: '\u108A'
-        }]);
+        return of([
+            {
+                from: '\u103F',
+                to: '\u108A'
+            }
+        ]);
     }
 }
 
 describe('TranslitModule', () => {
     it("should provide 'TranslitService'", () => {
         TestBed.configureTestingModule({
-            imports: [
-                TranslitModule
-            ]
+            imports: [TranslitModule]
         });
 
-        const translitService = TestBed.get<TranslitService>(TranslitService);
+        const translitService = TestBed.inject<TranslitService>(TranslitService);
 
-        expect(translitService).toBeDefined();
-        expect(translitService instanceof TranslitService).toBeTruthy();
+        void expect(translitService).toBeDefined();
+        void expect(translitService instanceof TranslitService).toBeTruthy();
     });
 });
 
@@ -60,21 +60,19 @@ describe('TranslitModule#withOptions', () => {
             ]
         });
 
-        const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
-        const translitRuleStore = TestBed.get<TranslitRuleStore>(TranslitRuleStore) as TranslitRuleStore;
+        const translitService = TestBed.inject<TranslitService>(TranslitService);
+        const translitRuleStore = TestBed.inject<TranslitRuleStore>(TranslitRuleStore);
 
-        translitService.loadRule('rule1').subscribe(ruleAny => {
-            expect(ruleAny).toBeDefined();
-            expect(translitRuleStore.cachedRules.size).toBe(0);
+        translitService.loadRule('rule1').subscribe((ruleAny) => {
+            void expect(ruleAny).toBeDefined();
+            void expect(translitRuleStore.cachedRules.size).toBe(0);
             done();
         });
     });
 
     it("should use cache rules when 'shareCachedRules' is 'true' ", (done: DoneFn) => {
         TestBed.configureTestingModule({
-            imports: [
-                TranslitModule.withOptions({})
-            ],
+            imports: [TranslitModule.withOptions({})],
             providers: [
                 {
                     provide: TRANSLIT_RULE_LOADER,
@@ -83,12 +81,12 @@ describe('TranslitModule#withOptions', () => {
             ]
         });
 
-        const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
-        const translitRuleStore = TestBed.get<TranslitRuleStore>(TranslitRuleStore) as TranslitRuleStore;
+        const translitService = TestBed.inject<TranslitService>(TranslitService);
+        const translitRuleStore = TestBed.inject<TranslitRuleStore>(TranslitRuleStore);
 
-        translitService.loadRule('rule1').subscribe(ruleAny => {
-            expect(ruleAny).toBeDefined();
-            expect(translitRuleStore.cachedRules.size).toBe(1);
+        translitService.loadRule('rule1').subscribe((ruleAny) => {
+            void expect(ruleAny).toBeDefined();
+            void expect(translitRuleStore.cachedRules.size).toBe(1);
             done();
         });
     });
@@ -102,23 +100,28 @@ describe('TranslitModule#withOptions', () => {
             ]
         });
 
-        const testRules: TranslitRulePhase[] = [{
-            rules: [{
-                from: '\u1086',
-                to: '\u103F'
-            }]
-        }];
+        const testRules: TranslitRulePhase[] = [
+            {
+                rules: [
+                    {
+                        from: '\u1086',
+                        to: '\u103F'
+                    }
+                ]
+            }
+        ];
 
-        const translitService = TestBed.get<TranslitService>(TranslitService) as TranslitService;
+        const translitService = TestBed.inject<TranslitService>(TranslitService);
 
-        translitService.translit('\u101E\u1030\u101B\u1086\u1010\u102E', 'test', testRules, undefined, true)
-            .subscribe(result => {
+        translitService
+            .translit('\u101E\u1030\u101B\u1086\u1010\u102E', 'test', testRules, undefined, true)
+            .subscribe((result) => {
                 const traces = result.traces as TranslitTraceItem[];
-                expect(traces[0].from).toBe('\u1086');
-                expect(traces[0].to).toBe('\u103F');
-                expect(traces[0].inputString).toBe('\u1086\u1010\u102E');
-                expect(traces[0].matchedString).toBe('\u1086');
-                expect(traces[0].replacedString).toBe('\u103F');
+                void expect(traces[0].from).toBe('\u1086');
+                void expect(traces[0].to).toBe('\u103F');
+                void expect(traces[0].inputString).toBe('\u1086\u1010\u102E');
+                void expect(traces[0].matchedString).toBe('\u1086');
+                void expect(traces[0].replacedString).toBe('\u103F');
                 done();
             });
     });

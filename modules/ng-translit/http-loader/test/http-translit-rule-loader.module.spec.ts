@@ -13,15 +13,12 @@ import { HttpTranslitRuleLoaderModule } from '../src/http-translit-rule-loader.m
 describe('HttpTranslitRuleLoaderModule', () => {
     it("should create 'HttpTranslitRuleLoader'", () => {
         TestBed.configureTestingModule({
-            imports: [
-                HttpClientTestingModule,
-                HttpTranslitRuleLoaderModule
-            ]
+            imports: [HttpClientTestingModule, HttpTranslitRuleLoaderModule]
         });
 
-        const httpTranslitRuleLoader = TestBed.get<HttpTranslitRuleLoader>(TRANSLIT_RULE_LOADER);
-        expect(httpTranslitRuleLoader).toBeDefined();
-        expect(httpTranslitRuleLoader instanceof HttpTranslitRuleLoader).toBeTruthy();
+        const httpTranslitRuleLoader = TestBed.inject<HttpTranslitRuleLoader>(TRANSLIT_RULE_LOADER);
+        void expect(httpTranslitRuleLoader).toBeDefined();
+        void expect(httpTranslitRuleLoader instanceof HttpTranslitRuleLoader).toBeTruthy();
     });
 });
 
@@ -36,8 +33,8 @@ describe('HttpTranslitRuleLoaderModule#withOptions', () => {
             ]
         });
 
-        const httpTranslitRuleLoader = TestBed.get<HttpTranslitRuleLoader>(TRANSLIT_RULE_LOADER) as HttpTranslitRuleLoader;
-        expect(httpTranslitRuleLoader.baseUrl).toBe('/mock/rules/');
+        const httpTranslitRuleLoader = TestBed.inject<HttpTranslitRuleLoader>(TRANSLIT_RULE_LOADER);
+        void expect(httpTranslitRuleLoader.baseUrl).toBe('/mock/rules/');
     });
 
     it("should work with 'baseUrl' injection token value", () => {
@@ -58,8 +55,8 @@ describe('HttpTranslitRuleLoaderModule#withOptions', () => {
             ]
         });
 
-        const httpTranslitRuleLoader = TestBed.get<HttpTranslitRuleLoader>(TRANSLIT_RULE_LOADER) as HttpTranslitRuleLoader;
-        expect(httpTranslitRuleLoader.baseUrl).toBe('/mock/rules/');
+        const httpTranslitRuleLoader = TestBed.inject<HttpTranslitRuleLoader>(TRANSLIT_RULE_LOADER);
+        void expect(httpTranslitRuleLoader.baseUrl).toBe('/mock/rules/');
     });
 
     it("should work with 'endpointFactory' value", () => {
@@ -77,7 +74,7 @@ describe('HttpTranslitRuleLoaderModule#withOptions', () => {
             ]
         });
 
-        const httpTranslitRuleLoader = TestBed.get<HttpTranslitRuleLoader>(TRANSLIT_RULE_LOADER) as HttpTranslitRuleLoader;
-        expect(httpTranslitRuleLoader.getEndpoint('mock-rule')).toBe('/mock-rule.json');
+        const httpTranslitRuleLoader = TestBed.inject<HttpTranslitRuleLoader>(TRANSLIT_RULE_LOADER);
+        void expect(httpTranslitRuleLoader.getEndpoint('mock-rule')).toBe('/mock-rule.json');
     });
 });

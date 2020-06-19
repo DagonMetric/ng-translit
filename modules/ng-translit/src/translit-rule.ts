@@ -6,8 +6,6 @@
  * found under the LICENSE file in the root directory of this source tree.
  */
 
-// tslint:disable: no-reserved-keywords
-
 /**
  * Template variables definition.
  */

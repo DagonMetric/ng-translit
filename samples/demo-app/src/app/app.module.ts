@@ -1,13 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+
+import { TranslitModule } from '@dagonmetric/ng-translit';
 
 import { AppComponent } from './app.component';
 
 @NgModule({
     declarations: [AppComponent],
-    imports: [CommonModule, BrowserModule, HttpClientModule],
+    imports: [
+        CommonModule,
+        BrowserModule,
+
+        // ng-translit module
+        TranslitModule
+    ],
     bootstrap: [AppComponent]
 })
 export class AppModule {}

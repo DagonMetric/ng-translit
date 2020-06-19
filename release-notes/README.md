@@ -2,6 +2,7 @@
 
 | Date (UTC) | Version |  |  |
 | :-- | :-- | :--: | :-- |
+| 2020-06-19 | 14.2.3 | [release notes](v14.2.3/README.md)/[npm](https://www.npmjs.com/package/@dagonmetric/ng-translit/v/14.2.3) | - |
 | 2019-12-29 | 14.2.2 | [release notes](v14.2.2/README.md)/[npm](https://www.npmjs.com/package/@dagonmetric/ng-translit/v/14.2.2) | - |
 | 2019-10-14 | 14.2.1 | [release notes](v14.2.1/README.md)/[npm](https://www.npmjs.com/package/@dagonmetric/ng-translit/v/14.2.1) | - |
 | 2019-08-20 | 14.2.0 | [release notes](v14.2.0/README.md)/[npm](https://www.npmjs.com/package/@dagonmetric/ng-translit/v/14.2.0) | - |

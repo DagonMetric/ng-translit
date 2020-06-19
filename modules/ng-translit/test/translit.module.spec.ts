@@ -1,5 +1,3 @@
-// tslint:disable: no-floating-promises
-
 import { Injectable } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 

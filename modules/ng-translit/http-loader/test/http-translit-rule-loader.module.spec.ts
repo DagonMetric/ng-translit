@@ -1,5 +1,3 @@
-// tslint:disable: no-floating-promises
-
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { InjectionToken } from '@angular/core';
 

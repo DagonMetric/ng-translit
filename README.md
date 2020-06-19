@@ -74,7 +74,7 @@ import { TranslitRuleItem, TranslitService } from '@dagonmetric/ng-translit';
   templateUrl: './app.component.html'
 })
 export class AppComponent {
-  constructor(private readonly _translitService: TranslitService) {
+  constructor(private readonly translitService: TranslitService) {
     const zg2uniRules: TranslitRuleItem[] = [{
       from: '\u103B([\u1000-\u1021])',
       to: '$1\u103C'
@@ -84,7 +84,7 @@ export class AppComponent {
       to: '\u103A'
     }];
 
-    this._translitService.translit('ျမန္မာစာ', 'zg2uni', zg2uniRules)
+    this.translitService.translit('ျမန္မာစာ', 'zg2uni', zg2uniRules)
       .subscribe(result => {
         // output: မြန်မာစာ
         console.log('output: ', result.outputText);

@@ -1,9 +1,9 @@
 # Transliterate Service for Angular
 
 [![GitHub Actions Status](https://github.com/DagonMetric/ng-translit/workflows/Main%20Workflow/badge.svg)](https://github.com/DagonMetric/ng-translit/actions)
-[![Azure Pipelines Status](https://dev.azure.com/DagonMetric/ng-translit/_apis/build/status/DagonMetric.ng-translit?branchName=master)](https://dev.azure.com/DagonMetric/ng-translit/_build/latest?definitionId=8&branchName=master)
+[![Azure Pipeline Status](https://dev.azure.com/DagonMetric/ng-translit/_apis/build/status/DagonMetric.ng-translit?branchName=master)](https://dev.azure.com/DagonMetric/ng-translit/_build?definitionId=8)
 [![codecov](https://codecov.io/gh/DagonMetric/ng-translit/branch/master/graph/badge.svg)](https://codecov.io/gh/DagonMetric/ng-translit)
-[![npm version](https://img.shields.io/npm/v/@dagonmetric/ng-translit.svg)](https://www.npmjs.com/package/@dagonmetric/ng-translit)
+[![npm version](https://badge.fury.io/js/%40dagonmetric%2Fng-translit.svg)](https://www.npmjs.com/package/@dagonmetric/ng-translit)
 [![Gitter](https://badges.gitter.im/DagonMetric/general.svg)](https://gitter.im/DagonMetric/general?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 General-purpose transliteration service for Angular applications which can be used in swapping letters such as α → a, ၎ → ၎င်း or Zawgyi-One to standard Myanmar Unicode.
@@ -60,6 +60,8 @@ import { TranslitModule } from '@dagonmetric/ng-translit';
 export class AppModule { }
 ```
 
+Live edit [app.module.ts in stackblitz](https://stackblitz.com/github/dagonmetric/ng-translit/tree/master/samples/demo-app?file=src%2Fapp%2Fapp.module.ts)
+
 ### Usage (app.component.ts)
 
 ```typescript
@@ -91,6 +93,12 @@ export class AppComponent {
 }
 ```
 
+Live edit [app.component.ts in stackblitz](https://stackblitz.com/github/dagonmetric/ng-translit/tree/master/samples/demo-app?file=src%2Fapp%2Fapp.component.ts)
+
+## Samples
+
+* Demo app [view source](https://github.com/DagonMetric/ng-translit/tree/master/samples/demo-app) / [live edit in stackblitz](https://stackblitz.com/github/dagonmetric/ng-translit/tree/master/samples/demo-app)
+
 ### Documentation
 
 * [ng-translit wiki](https://github.com/DagonMetric/ng-translit/wiki)
@@ -105,7 +113,7 @@ export class AppComponent {
 
 ## Feedback and Contributing
 
-Check out the [Contributing](https://github.com/DagonMetric/ng-translit/blob/master/CONTRIBUTING.md) page to see the best places to log issues and start discussions.
+Check out the [Contributing](https://github.com/DagonMetric/ng-translit/blob/master/CONTRIBUTING.md) page.
 
 ## License
 

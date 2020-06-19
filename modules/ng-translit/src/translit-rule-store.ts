@@ -14,12 +14,8 @@ import { TranslitRuleParsed } from './translit-rule-parsed';
  * The singleton service for sharing cached rules.
  */
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'any'
 })
 export class TranslitRuleStore {
-    private readonly _cachedRules: Map<string, TranslitRuleParsed> = new Map<string, TranslitRuleParsed>();
-
-    get cachedRules(): Map<string, TranslitRuleParsed> {
-        return this._cachedRules;
-    }
+    readonly cachedRules: Map<string, TranslitRuleParsed> = new Map<string, TranslitRuleParsed>();
 }

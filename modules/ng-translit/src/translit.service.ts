@@ -231,7 +231,6 @@ export class TranslitService {
         return translitResult;
     }
 
-    // tslint:disable-next-line: max-func-body-length
     private applyRuleItems(
         inputStr: string,
         rulePhase: TranslitRulePhaseParsed,
@@ -390,7 +389,6 @@ export class TranslitService {
         return outStr;
     }
 
-    // tslint:disable-next-line: max-func-body-length
     private applySubRuleItems(
         inputStr: string,
         subRuleItems: TranslitSubRuleItemParsed[],
@@ -733,7 +731,6 @@ export class TranslitService {
         }
     }
 
-    // tslint:disable-next-line: max-func-body-length
     private parseTplSeq(
         parsedRuleItem: TranslitRuleItemParsed | TranslitSubRuleItemParsed,
         tplSeq?: { [key: string]: [string, string, number][] },

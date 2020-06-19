@@ -10,7 +10,11 @@ import { ModuleWithProviders, NgModule } from '@angular/core';
 
 import { TRANSLIT_RULE_LOADER } from '@dagonmetric/ng-translit';
 
-import { HTTP_TRANSLIT_RULE_LOADER_OPTIONS, HttpTranslitRuleLoader, HttpTranslitRuleLoaderOptions } from './http-translit-rule-loader';
+import {
+    HTTP_TRANSLIT_RULE_LOADER_OPTIONS,
+    HttpTranslitRuleLoader,
+    HttpTranslitRuleLoaderOptions
+} from './http-translit-rule-loader';
 
 /**
  * The NGMODULE for providing `HttpTranslitRuleLoader`.
@@ -36,7 +40,7 @@ export class HttpTranslitRuleLoaderModule {
                     provide: HTTP_TRANSLIT_RULE_LOADER_OPTIONS,
                     useValue: options
                 }
-            ],
+            ]
         };
     }
 }

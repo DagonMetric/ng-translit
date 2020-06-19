@@ -27,55 +27,57 @@ export interface HttpTranslitRuleLoaderOptions {
     endpointFactory?(baseUrl: string, ruleName: string): string;
 }
 
-export const HTTP_TRANSLIT_RULE_LOADER_OPTIONS = new InjectionToken<HttpTranslitRuleLoaderOptions>('HttpTranslitRuleLoaderOptions');
+export const HTTP_TRANSLIT_RULE_LOADER_OPTIONS = new InjectionToken<HttpTranslitRuleLoaderOptions>(
+    'HttpTranslitRuleLoaderOptions'
+);
 
 /**
  * Implements an HTTP client API for `TranslitRuleLoader` that relies on the Angular `HttpClient`.
  */
-@Injectable()
+@Injectable({
+    providedIn: 'any'
+})
 export class HttpTranslitRuleLoader implements TranslitRuleLoader {
-    private readonly _baseUrl: string;
-    private readonly _endpointFactory: (baseUrl: string, ruleName: string) => string;
+    readonly baseUrl: string;
 
-    get baseUrl(): string {
-        return this._baseUrl;
-    }
+    private readonly endpointFactory: (baseUrl: string, ruleName: string) => string;
 
     constructor(
-        private readonly _httpClient: HttpClient,
+        private readonly httpClient: HttpClient,
         injector: Injector,
-        @Optional() @Inject(HTTP_TRANSLIT_RULE_LOADER_OPTIONS) options?: HttpTranslitRuleLoaderOptions) {
+        @Optional() @Inject(HTTP_TRANSLIT_RULE_LOADER_OPTIONS) options?: HttpTranslitRuleLoaderOptions
+    ) {
         if (options && options.baseUrl) {
             if (typeof options.baseUrl === 'string') {
-                this._baseUrl = options.baseUrl;
+                this.baseUrl = options.baseUrl;
             } else {
-                this._baseUrl = injector.get(options.baseUrl);
+                this.baseUrl = injector.get(options.baseUrl);
             }
 
-            if (!this._baseUrl.endsWith('/')) {
-                this._baseUrl += '/';
+            if (!this.baseUrl.endsWith('/')) {
+                this.baseUrl += '/';
             }
         } else {
-            this._baseUrl = '/assets/translit-rules/';
+            this.baseUrl = '/assets/translit-rules/';
         }
 
         if (options && options.endpointFactory) {
-            this._endpointFactory = options.endpointFactory;
+            // eslint-disable-next-line @typescript-eslint/unbound-method
+            this.endpointFactory = options.endpointFactory;
         } else {
-            this._endpointFactory = (baseUrl, ruleName) => {
+            this.endpointFactory = (baseUrl, ruleName) => {
                 return `${baseUrl}${ruleName}.json`;
             };
         }
     }
 
     getEndpoint(ruleName: string): string {
-        return this._endpointFactory(this._baseUrl, ruleName);
+        return this.endpointFactory(this.baseUrl, ruleName);
     }
 
     load(ruleName: string): Observable<TranslitRuleAny> {
         const endpoint = this.getEndpoint(ruleName);
 
-        return this._httpClient
-            .get<TranslitRuleAny>(endpoint);
+        return this.httpClient.get<TranslitRuleAny>(endpoint);
     }
 }

@@ -16,7 +16,6 @@ import {
     TranslitTraceItem
 } from '../src';
 
-// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
 export function formatCodePoints(str?: string): string {
     if (str == null) {
         return '';
@@ -49,7 +48,6 @@ export function formatCodePoints(str?: string): string {
     return cpArray.join('');
 }
 
-// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
 export function toFailOutput(result: TranslitResult): string {
     let str = `\noutput: ${formatCodePoints(result.outputText)}\n\n`;
 
@@ -238,7 +236,6 @@ describe('TranslitService#loadRule', () => {
         const translitService = TestBed.inject<TranslitService>(TranslitService);
 
         translitService.loadRule('loaderError').subscribe({
-            // eslint-disable-next-line prefer-arrow/prefer-arrow-functions
             error(actualError: Error): void {
                 void expect(of(actualError)).toBeTruthy();
                 void expect(actualError).not.toBeNull();
@@ -262,7 +259,6 @@ describe('TranslitService#loadRule', () => {
         const translitService = TestBed.inject<TranslitService>(TranslitService);
 
         translitService.loadRule('invalidRule').subscribe({
-            // eslint-disable-next-line prefer-arrow/prefer-arrow-functions
             error(actualError: Error): void {
                 void expect(of(actualError)).toBeTruthy();
                 void expect(actualError).not.toBeNull();
@@ -2206,7 +2202,6 @@ describe('TranslitService#translit', () => {
         const translitService = TestBed.inject<TranslitService>(TranslitService);
 
         translitService.translit('any', 'loaderError').subscribe({
-            // eslint-disable-next-line prefer-arrow/prefer-arrow-functions
             error(actualError: Error): void {
                 void expect(of(actualError)).toBeTruthy();
                 void expect(actualError).not.toBeNull();

@@ -98,7 +98,6 @@ describe('HttpTranslitRuleLoader#load', () => {
             const ruleName = 'error-rule';
 
             httpTranslitRuleLoader.load(ruleName).subscribe({
-                // eslint-disable-next-line prefer-arrow/prefer-arrow-functions
                 error(actualError: Error): void {
                     void expect(of(actualError)).toBeTruthy();
                     void expect(actualError).not.toBeNull();

@@ -1,0 +1,54 @@
+{
+    "$schema": "./node_modules/lib-tools/schemas/schema.json",
+    "projects": {
+      "ng-translit": {
+        "root": "modules/ng-translit",
+        "tasks": {
+          "build": {
+            "outputPath": "../../dist/packages/ng-translit",
+            "script": {
+              "compilations": "auto",
+              "umdId": "ngTranslit"            
+            }
+          },
+          "test": {
+            "testIndexFile": "test.ts",
+            "tsConfig": "tsconfig.test.json",
+            "envOverrides": {
+              "ci": {
+                "codeCoverageExclude": [
+                  "**/test.ts",
+                  "**/index.ts",
+                  "**/public_api.ts"
+                ],
+                "reporters": [
+                  "junit",
+                  "coverage-istanbul"
+                ],
+                "browsers": [
+                  "ChromeHeadlessCI"
+                ],
+                "singleRun": true
+              }
+            }
+          }
+        }
+      },
+      "ng-translit-http-loader": {
+        "root": "modules/ng-translit/http-loader",
+        "tasks": {
+          "build": {
+            "outputPath": "../../dist/packages/ng-translit",
+            "script": {
+              "compilations": "auto",
+              "umdId": "ngTranslit.httpLoader",
+              "externals": {
+                "@dagonmetric/ng-translit": "ngTranslit"
+              }
+            }
+          }          
+        }
+      }
+    }
+  }
+  
